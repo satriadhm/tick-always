@@ -1,0 +1,236 @@
+# Tick Always - Cursor Rules
+
+## Project Overview
+Tick Always is a TickTick-like productivity web application built with Next.js 16, MongoDB, and TypeScript. It focuses on task management, recurring tasks, calendar views, and habit tracking.
+
+## Tech Stack
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Database**: MongoDB with Mongoose
+- **Styling**: Tailwind CSS 4
+- **Authentication**: NextAuth.js v5
+- **State Management**: Zustand (optional, use React Context for simple cases)
+- **Date Handling**: date-fns
+- **Validation**: Zod
+- **Calendar**: Custom implementation or react-calendar
+- **Charts**: Recharts (for habit visualizations)
+
+## Code Style & Conventions
+
+### TypeScript
+- Always use TypeScript with strict mode
+- Define interfaces/types in `types/` directory
+- Use type inference where possible, explicit types for function parameters and returns
+- Prefer `interface` for object shapes, `type` for unions/intersections
+- Use `as const` for literal types when needed
+
+### File Naming
+- Components: PascalCase (e.g., `TaskList.tsx`)
+- Utilities: camelCase (e.g., `dateHelpers.ts`)
+- API routes: lowercase with hyphens (e.g., `api/tasks/route.ts`)
+- Models: PascalCase (e.g., `Task.ts`)
+
+### Project Structure
+```
+app/
+  (auth)/          # Auth routes (login, register)
+  (dashboard)/     # Protected dashboard routes
+    tasks/
+    calendar/
+    habits/
+  api/             # API routes
+lib/
+  mongodb.ts       # MongoDB connection
+  models/          # Mongoose models
+  utils/           # Utility functions
+components/
+  tasks/           # Task-related components
+  habits/          # Habit-related components
+  calendar/        # Calendar components
+  ui/              # Reusable UI components
+types/             # TypeScript type definitions
+```
+
+### React/Next.js Best Practices
+- Use Server Components by default, Client Components only when needed
+- Mark Client Components with `'use client'` directive
+- Use async/await for Server Components and API routes
+- Prefer `fetch` with Next.js caching for data fetching
+- Use Next.js `Image` component for images
+- Implement proper error boundaries
+- Use loading.tsx and error.tsx for route-level loading/error states
+
+### MongoDB/Mongoose
+- Always use Mongoose schemas with TypeScript types
+- Use ObjectId references for relationships
+- Create indexes for frequently queried fields
+- Use transactions for multi-document operations
+- Implement soft deletes where appropriate (add `deletedAt` field)
+- Use aggregation pipelines for complex queries
+
+### API Routes
+- Use Next.js 13+ App Router API routes (`route.ts`)
+- Validate all inputs with Zod schemas
+- Return consistent JSON responses: `{ success: boolean, data?: any, error?: string }`
+- Use proper HTTP status codes (200, 201, 400, 401, 404, 500)
+- Implement authentication middleware for protected routes
+- Handle errors gracefully with try-catch blocks
+
+### Component Guidelines
+- Keep components small and focused (single responsibility)
+- Extract reusable logic into custom hooks
+- Use TypeScript props interfaces
+- Implement proper loading and error states
+- Make components accessible (ARIA labels, keyboard navigation)
+- Use Tailwind CSS utility classes, avoid inline styles
+- Create a design system with reusable UI components
+
+### State Management
+- Use React Context for simple global state (auth, theme)
+- Use Zustand for complex state management if needed
+- Prefer Server Components and URL state for data fetching
+- Use React Query/SWR only if complex caching is needed
+
+### Date Handling
+- Always use date-fns for date operations
+- Store dates in UTC in MongoDB
+- Display dates in user's local timezone
+- Use ISO 8601 format for date strings
+- Be consistent with date formats across the app
+
+### Recurring Tasks Logic
+- Implement recurrence rules as JSON objects
+- Support: daily, weekly, monthly, yearly, custom intervals
+- Generate next occurrence on task completion
+- Prevent duplicate task generation
+- Use cron-like logic or date-fns for calculations
+
+### Habit Tracking
+- Calculate streaks based on consecutive completions
+- Store habit completions as separate documents
+- Implement heatmap visualization (GitHub-style)
+- Track best streak separately from current streak
+- Handle timezone-aware date comparisons
+
+### Security
+- Never expose MongoDB connection strings in client code
+- Hash passwords with bcryptjs (minimum 10 rounds)
+- Validate and sanitize all user inputs
+- Use environment variables for sensitive data (.env.local)
+- Implement rate limiting on API routes
+- Use HTTPS in production
+- Sanitize user-generated content to prevent XSS
+
+### Performance
+- Implement pagination for large lists (tasks, habits)
+- Use MongoDB indexes for frequently queried fields
+- Lazy load calendar data by date ranges
+- Optimize images and assets
+- Use Next.js Image optimization
+- Implement proper caching strategies
+- Use React.memo for expensive components
+
+### Error Handling
+- Always use try-catch in async functions
+- Log errors appropriately (console.error in dev, proper logging in prod)
+- Provide user-friendly error messages
+- Implement error boundaries for React components
+- Handle network errors gracefully
+
+### Testing (Future)
+- Write unit tests for utility functions
+- Test API routes with integration tests
+- Test recurrence logic thoroughly
+- Test streak calculations edge cases
+
+### Git Workflow
+- Write clear, descriptive commit messages
+- Use conventional commits format (feat:, fix:, refactor:, etc.)
+- Create feature branches for new features
+- Keep commits atomic and focused
+
+### Code Quality
+- Run ESLint before committing
+- Fix all TypeScript errors before merging
+- Remove console.logs before production
+- Remove unused imports and variables
+- Keep functions under 50 lines when possible
+- Add JSDoc comments for complex functions
+
+### Environment Variables
+Required in `.env.local`:
+- `MONGODB_URI` - MongoDB connection string
+- `NEXTAUTH_SECRET` - Secret for NextAuth.js
+- `NEXTAUTH_URL` - Base URL of the application
+- `NODE_ENV` - Environment (development/production)
+
+### Common Patterns
+
+#### API Route Pattern
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { connectDB } from '@/lib/mongodb';
+import { Task } from '@/lib/models/Task';
+import { z } from 'zod';
+
+const schema = z.object({ /* ... */ });
+
+export async function GET(request: NextRequest) {
+  try {
+    await connectDB();
+    // Implementation
+    return NextResponse.json({ success: true, data: result });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: 'Error message' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+#### Mongoose Model Pattern
+```typescript
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface ITask extends Document {
+  // Interface definition
+}
+
+const TaskSchema = new Schema<ITask>({
+  // Schema definition
+}, { timestamps: true });
+
+export const Task = mongoose.models.Task || mongoose.model<ITask>('Task', TaskSchema);
+```
+
+#### Component Pattern
+```typescript
+'use client'; // Only if needed
+
+import { useState } from 'react';
+
+interface ComponentProps {
+  // Props interface
+}
+
+export default function Component({ }: ComponentProps) {
+  // Implementation
+}
+```
+
+## When Adding New Features
+1. Update types in `types/index.ts`
+2. Create/update Mongoose models if needed
+3. Create API routes in `app/api/`
+4. Create UI components in `components/`
+5. Add pages/routes in `app/`
+6. Update this file if patterns change
+
+## Notes
+- Always check for existing patterns before creating new code
+- Prefer composition over inheritance
+- Write self-documenting code with clear variable names
+- Keep the codebase DRY (Don't Repeat Yourself)
+- Follow the existing code style in the project
+
