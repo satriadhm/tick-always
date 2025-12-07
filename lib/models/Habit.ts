@@ -20,8 +20,7 @@ const HabitFrequencySchema = new Schema<HabitFrequency>(
 const HabitSchema = new Schema<IHabit>(
   {
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
       index: true,
     },

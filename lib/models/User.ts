@@ -13,7 +13,7 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: function() {
+      required: function(this: IUser) {
         return !this.googleId;
       },
       minlength: 8,

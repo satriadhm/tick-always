@@ -1,8 +1,8 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 // User Types
 export interface IUser extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   email: string;
   password?: string;
   name: string;
@@ -30,7 +30,7 @@ export interface RecurrenceRule {
 }
 
 export interface ITask extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   userId: string;
   title: string;
   description?: string;
@@ -57,7 +57,7 @@ export interface HabitFrequency {
 }
 
 export interface IHabit extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   userId: string;
   name: string;
   description?: string;
@@ -71,7 +71,7 @@ export interface IHabit extends Document {
 }
 
 export interface IHabitCompletion extends Document {
-  _id: string;
+  _id: Types.ObjectId;
   habitId: string;
   userId: string;
   date: Date;

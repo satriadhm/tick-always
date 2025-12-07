@@ -31,8 +31,7 @@ const RecurrenceRuleSchema = new Schema<RecurrenceRule>(
 const TaskSchema = new Schema<ITask>(
   {
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
       index: true,
     },
@@ -73,8 +72,7 @@ const TaskSchema = new Schema<ITask>(
     },
     recurrenceRule: RecurrenceRuleSchema,
     parentTaskId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Task',
+      type: String,
       index: true,
     },
     occurrenceDate: Date,

@@ -4,14 +4,12 @@ import { IHabitCompletion } from '@/types';
 const HabitCompletionSchema = new Schema<IHabitCompletion>(
   {
     habitId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Habit',
+      type: String,
       required: true,
       index: true,
     },
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
       index: true,
     },

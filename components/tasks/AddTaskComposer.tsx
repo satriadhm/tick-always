@@ -19,7 +19,7 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
 
   // Keyboard shortcut: 'N' to focus
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
       if ((e.key === 'n' || e.key === 'N') && !e.ctrlKey && !e.metaKey) {
         const target = e.target as HTMLElement;
         if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
@@ -29,8 +29,8 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
-    return () => window.removeEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {

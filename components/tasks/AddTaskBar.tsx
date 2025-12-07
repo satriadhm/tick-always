@@ -14,7 +14,7 @@ export default function AddTaskBar({ onAddTask, placeholder = 'Add a task…' }:
 
   // Keyboard shortcut: 'N' to focus
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
       if ((e.key === 'n' || e.key === 'N') && !e.ctrlKey && !e.metaKey) {
         const target = e.target as HTMLElement;
         if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
@@ -22,9 +22,8 @@ export default function AddTaskBar({ onAddTask, placeholder = 'Add a task…' }:
         }
       }
     };
-
-    window.addEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
-    return () => window.removeEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

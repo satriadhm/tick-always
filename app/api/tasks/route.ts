@@ -76,12 +76,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     // Build sort object
-    interface SortObject {
-      dueDate?: number;
-      priority?: number;
-      createdAt?: number;
-    }
-    const sort: SortObject = {};
+    const sort: Record<string, 1 | -1> = {};
     if (sortBy === 'dueDate') {
       sort.dueDate = sortOrder === 'desc' ? -1 : 1;
     } else if (sortBy === 'priority') {
@@ -197,7 +192,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     if (validatedData.isRecurring && validatedData.recurrenceRule) {
       taskData.recurrenceRule = validatedData.recurrenceRule;
       if (validatedData.recurrenceRule.endDate) {
-        taskData.recurrenceRule.endDate = toUTC(validatedData.recurrenceRule.endDate);
+        const recurrenceRule = taskData.recurrenceRule as { endDate?: Date };
+        recurrenceRule.endDate = toUTC(validatedData.recurrenceRule.endDate);
       }
     }
 

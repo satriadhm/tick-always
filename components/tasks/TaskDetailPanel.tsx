@@ -26,9 +26,12 @@ export default function TaskDetailPanel({
     tags: string[];
     completed: boolean;
     isRecurring: boolean;
+    createdAt?: string;
+    updatedAt?: string;
   }
   const [task, setTask] = useState<TaskData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -305,12 +308,12 @@ export default function TaskDetailPanel({
         </div>
 
         {/* Activity Log */}
-        {task && (
+        {task && task.createdAt && (
           <div className="pt-4 border-t border-gray-200">
             <p className="text-xs text-gray-500">
               Created: {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm')}
             </p>
-            {task.updatedAt !== task.createdAt && (
+            {task.updatedAt && task.updatedAt !== task.createdAt && (
               <p className="text-xs text-gray-500 mt-1">
                 Updated: {format(new Date(task.updatedAt), 'MMM d, yyyy HH:mm')}
               </p>
