@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { format, parseISO, addMonths, subMonths } from 'date-fns';
 import CalendarToolbar from '@/components/calendar/CalendarToolbar';
@@ -19,7 +19,7 @@ interface CalendarDay {
   tasks: CalendarTask[];
 }
 
-export default function CalendarPage() {
+function CalendarContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState<Date>(() => {
@@ -152,5 +152,20 @@ export default function CalendarPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-full bg-[#F7F7F7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#3E7BFA]"></div>
+          <p className="mt-4 text-gray-600">Loading calendar...</p>
+        </div>
+      </div>
+    }>
+      <CalendarContent />
+    </Suspense>
   );
 }
