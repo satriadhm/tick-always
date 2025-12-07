@@ -22,15 +22,27 @@ interface CalendarDay {
 function CalendarContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState<Date>(() => {
-    const dateParam = searchParams.get('date');
-    return dateParam ? parseISO(dateParam) : new Date();
-  });
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
   const [hideCompleted, setHideCompleted] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize date from URL params after mount
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      try {
+        const parsedDate = parseISO(dateParam);
+        if (!isNaN(parsedDate.getTime())) {
+          setCurrentDate(parsedDate);
+        }
+      } catch {
+        // Invalid date, use current date
+      }
+    }
+  }, [searchParams]);
 
   const fetchCalendarData = async () => {
     setIsLoading(true);
@@ -154,6 +166,9 @@ function CalendarContent() {
     </div>
   );
 }
+
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
 
 export default function CalendarPage() {
   return (
