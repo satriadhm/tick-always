@@ -2,14 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { format, parseISO, addMonths, subMonths, startOfMonth } from 'date-fns';
+import { format, parseISO, addMonths, subMonths } from 'date-fns';
 import CalendarToolbar from '@/components/calendar/CalendarToolbar';
 import CalendarMonthView from '@/components/calendar/CalendarMonthView';
 import TaskList from '@/components/tasks/TaskList';
 
+interface CalendarTask {
+  id: string;
+  title: string;
+  priority: 'none' | 'low' | 'medium' | 'high';
+  completed: boolean;
+}
+
 interface CalendarDay {
   date: string;
-  tasks: any[];
+  tasks: CalendarTask[];
 }
 
 export default function CalendarPage() {
@@ -24,10 +31,6 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchCalendarData();
-  }, [currentDate, hideCompleted]);
 
   const fetchCalendarData = async () => {
     setIsLoading(true);
@@ -53,6 +56,11 @@ export default function CalendarPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCalendarData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDate, hideCompleted, viewMode]);
 
   const handlePrevious = () => {
     const newDate = subMonths(currentDate, 1);

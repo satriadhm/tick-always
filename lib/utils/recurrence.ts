@@ -44,13 +44,6 @@ function toDate(d?: string | Date | null): Date | null {
   return typeof d === 'string' ? parseISO(d) : d;
 }
 
-/**
- * Helper: Get day of week (0=Sunday, 6=Saturday)
- */
-function getDayOfWeek(date: Date | string | null): number {
-  const d = date ? toDate(date) : new Date();
-  return d ? d.getDay() : new Date().getDay();
-}
 
 /**
  * Generate recurring task instances for a date range
@@ -97,9 +90,8 @@ export function generateRecurrenceInstances(
 
   const instances: TaskInstance[] = [];
   const interval = rule.interval || 1;
-  let occurrences = 0;
-  const MAX_ITER = 5000; // Safety limit
-  let safety = 0;
+  const occurrences = 0;
+  const safety = 0;
 
   // Generate instances based on recurrence type
   switch (rule.type) {
@@ -123,8 +115,16 @@ export function generateRecurrenceInstances(
   return instances;
 }
 
+interface TaskInput {
+  id: string;
+  title: string;
+  description?: string;
+  priority: 'none' | 'low' | 'medium' | 'high';
+  tags: string[];
+}
+
 function generateDailyInstances(
-  task: any,
+  task: TaskInput,
   seedDate: Date,
   from: Date,
   to: Date,
@@ -175,7 +175,7 @@ function generateDailyInstances(
 }
 
 function generateWeeklyInstances(
-  task: any,
+  task: TaskInput,
   seedDate: Date,
   from: Date,
   to: Date,
@@ -247,7 +247,7 @@ function generateWeeklyInstances(
 }
 
 function generateMonthlyInstances(
-  task: any,
+  task: TaskInput,
   seedDate: Date,
   from: Date,
   to: Date,
@@ -307,7 +307,7 @@ function generateMonthlyInstances(
 }
 
 function generateYearlyInstances(
-  task: any,
+  task: TaskInput,
   seedDate: Date,
   from: Date,
   to: Date,
@@ -376,7 +376,7 @@ function generateYearlyInstances(
 }
 
 function generateCustomInstances(
-  task: any,
+  task: TaskInput,
   seedDate: Date,
   from: Date,
   to: Date,
@@ -448,7 +448,7 @@ function generateCustomInstances(
   return instances;
 }
 
-function createInstance(task: any, date: Date, index: number): TaskInstance {
+function createInstance(task: TaskInput, date: Date, index: number): TaskInstance {
   return {
     id: `${task.id}::${dateKey(date)}`,
     title: task.title,

@@ -10,11 +10,7 @@ export default function Header() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/me', {
         credentials: 'include', // Include cookies
@@ -32,7 +28,11 @@ export default function Header() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const handleLogout = async () => {
     try {

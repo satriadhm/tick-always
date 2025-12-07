@@ -23,8 +23,8 @@ export default function AddTaskBar({ onAddTask, placeholder = 'Add a task…' }:
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress as any);
-    return () => window.removeEventListener('keydown', handleKeyPress as any);
+    window.addEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
+    return () => window.removeEventListener('keydown', handleKeyPress as (e: KeyboardEvent) => void);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

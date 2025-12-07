@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IUser } from '@/types';
 
 const UserSchema = new Schema<IUser>(
@@ -13,13 +13,26 @@ const UserSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: function() {
+        return !this.googleId;
+      },
       minlength: 8,
     },
     name: {
       type: String,
       required: true,
       trim: true,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+    role: {
+      type: String,
+      default: 'user',
+      enum: ['user', 'admin'],
     },
   },
   {

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IHabit, HabitFrequency } from '@/types';
 
 const HabitFrequencySchema = new Schema<HabitFrequency>(

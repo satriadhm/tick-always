@@ -41,7 +41,6 @@ export default function TaskItemEnhanced({
   onClick,
 }: TaskItemEnhancedProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [showActions, setShowActions] = useState(false);
 
   const getDueDateBadge = () => {
     if (!dueDate) return null;

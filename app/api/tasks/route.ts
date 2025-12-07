@@ -3,7 +3,7 @@ import connectDB from '@/lib/mongodb';
 import { Task } from '@/lib/models/Task';
 import { requireAuth } from '@/lib/auth';
 import { taskCreateSchema } from '@/lib/utils/validation';
-import { ApiResponse, ITask } from '@/types';
+import { ApiResponse } from '@/types';
 import { toUTC } from '@/lib/utils/dateHelpers';
 
 // GET /api/tasks - Get all tasks with filtering and pagination
@@ -25,7 +25,17 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
     // Build query
-    const query: any = {
+    interface TaskQuery {
+      userId: string;
+      deletedAt?: { $exists: boolean };
+      completed?: boolean;
+      priority?: string;
+      tags?: { $in: string[] };
+      dueDate?: { $gte?: Date; $lte?: Date };
+      $or?: Array<{ title?: { $regex: string; $options: string } } | { description?: { $regex: string; $options: string } }>;
+    }
+
+    const query: TaskQuery = {
       userId: user.userId,
       deletedAt: { $exists: false },
     };
@@ -66,11 +76,15 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     // Build sort object
-    const sort: any = {};
+    interface SortObject {
+      dueDate?: number;
+      priority?: number;
+      createdAt?: number;
+    }
+    const sort: SortObject = {};
     if (sortBy === 'dueDate') {
       sort.dueDate = sortOrder === 'desc' ? -1 : 1;
     } else if (sortBy === 'priority') {
-      const priorityOrder = { high: 3, medium: 2, low: 1, none: 0 };
       // We'll sort in memory for priority
     } else if (sortBy === 'createdAt') {
       sort.createdAt = sortOrder === 'desc' ? -1 : 1;
@@ -129,8 +143,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
         },
       },
     });
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -149,7 +163,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     const validatedData = taskCreateSchema.parse(body);
 
     // Prepare task data
-    const taskData: any = {
+    interface TaskDataInput {
+      userId: string;
+      title: string;
+      description?: string;
+      dueDate?: Date;
+      priority: 'none' | 'low' | 'medium' | 'high';
+      tags: string[];
+      isRecurring: boolean;
+      recurrenceRule?: unknown;
+    }
+
+    const taskData: TaskDataInput = {
       userId: user.userId,
       title: validatedData.title,
       description: validatedData.description,
@@ -205,21 +230,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
       },
       { status: 201 }
     );
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (error.name === 'ZodError' && error.errors && error.errors.length > 0) {
+    if (error instanceof Error && 'name' in error && error.name === 'ZodError' && 'errors' in error && Array.isArray(error.errors) && error.errors.length > 0) {
       return NextResponse.json(
-        { success: false, error: error.errors[0].message },
+        { success: false, error: ((error as { errors: Array<{ message: string }> }).errors[0]).message },
         { status: 400 }
       );
     }
 
     console.error('Create task error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create task';
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create task' },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

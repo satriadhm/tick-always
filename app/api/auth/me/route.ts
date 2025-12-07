@@ -32,8 +32,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }

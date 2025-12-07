@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Priority } from '@/types';
 import { format } from 'date-fns';
-import Button from '@/components/ui/Button';
 
 interface TaskDetailPanelProps {
   taskId: string | null;
@@ -18,9 +17,18 @@ export default function TaskDetailPanel({
   onUpdate,
   onDelete,
 }: TaskDetailPanelProps) {
-  const [task, setTask] = useState<any>(null);
+  interface TaskData {
+    id: string;
+    title: string;
+    description?: string;
+    dueDate?: string | null;
+    priority: Priority;
+    tags: string[];
+    completed: boolean;
+    isRecurring: boolean;
+  }
+  const [task, setTask] = useState<TaskData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -29,20 +37,7 @@ export default function TaskDetailPanel({
   const [tags, setTags] = useState<string[]>([]);
   const titleInputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (taskId) {
-      fetchTask();
-    }
-  }, [taskId]);
-
-  useEffect(() => {
-    if (isEditingTitle && titleInputRef.current) {
-      titleInputRef.current.focus();
-      titleInputRef.current.select();
-    }
-  }, [isEditingTitle]);
-
-  const fetchTask = async () => {
+  const fetchTask = useCallback(async () => {
     if (!taskId) return;
     setIsLoading(true);
     try {
@@ -55,7 +50,7 @@ export default function TaskDetailPanel({
         setTask(taskData);
         setTitle(taskData.title);
         setDescription(taskData.description || '');
-        setDueDate(taskData.dueDate ? taskData.dueDate.split('T')[0] : '');
+        setDueDate(taskData.dueDate ? format(new Date(taskData.dueDate), 'yyyy-MM-dd') : '');
         setPriority(taskData.priority);
         setTags(taskData.tags || []);
       }
@@ -64,11 +59,23 @@ export default function TaskDetailPanel({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [taskId]);
+
+  useEffect(() => {
+    if (taskId) {
+      fetchTask();
+    }
+  }, [taskId, fetchTask]);
+
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
 
   const handleSave = async () => {
     if (!taskId) return;
-    setIsSaving(true);
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'PUT',

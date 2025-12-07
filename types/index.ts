@@ -4,8 +4,10 @@ import { Document } from 'mongoose';
 export interface IUser extends Document {
   _id: string;
   email: string;
-  password: string;
+  password?: string;
   name: string;
+  googleId?: string;
+  role?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,7 +81,7 @@ export interface IHabitCompletion extends Document {
 }
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { ITask, RecurrenceRule } from '@/types';
 
 const RecurrenceRuleSchema = new Schema<RecurrenceRule>(

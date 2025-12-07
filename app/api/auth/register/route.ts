@@ -64,10 +64,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     });
 
     return response;
-  } catch (error: any) {
-    if (error.name === 'ZodError' && error.errors && error.errors.length > 0) {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'name' in error && error.name === 'ZodError' && 'errors' in error && Array.isArray(error.errors) && error.errors.length > 0) {
       return NextResponse.json(
-        { success: false, error: error.errors[0].message },
+        { success: false, error: ((error as { errors: Array<{ message: string }> }).errors[0]).message },
         { status: 400 }
       );
     }

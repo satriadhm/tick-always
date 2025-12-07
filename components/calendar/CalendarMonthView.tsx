@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { format, isToday, isSameMonth, startOfWeek, startOfMonth, endOfMonth, endOfWeek, addDays, parseISO } from 'date-fns';
+import { format, isToday, isSameMonth, startOfWeek, startOfMonth, endOfMonth, endOfWeek, addDays } from 'date-fns';
 
 interface Task {
   id: string;

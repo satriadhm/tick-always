@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { Priority } from '@/types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';

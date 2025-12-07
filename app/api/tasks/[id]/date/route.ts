@@ -70,14 +70,14 @@ export async function PATCH(
       success: true,
       data: { task: formattedTask },
     });
-  } catch (error: any) {
-    if (error.message === 'Unauthorized') {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (error.name === 'ZodError' && error.errors && error.errors.length > 0) {
+    if (error instanceof Error && 'name' in error && error.name === 'ZodError' && 'errors' in error && Array.isArray(error.errors) && error.errors.length > 0) {
       return NextResponse.json(
-        { success: false, error: error.errors[0].message },
+        { success: false, error: ((error as { errors: Array<{ message: string }> }).errors[0]).message },
         { status: 400 }
       );
     }
