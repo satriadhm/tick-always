@@ -167,9 +167,7 @@ function CalendarContent() {
   );
 }
 
-// Force dynamic rendering since we use searchParams
-export const dynamic = 'force-dynamic';
-
+// Main calendar page component with Suspense boundary
 export default function CalendarPage() {
   return (
     <Suspense fallback={
