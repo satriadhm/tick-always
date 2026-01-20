@@ -36,11 +36,11 @@ export default function Button({
   };
 
   // Shadow styles
-  const raisedShadow = '6px 6px 12px #bebebe, -6px -6px 12px #ffffff';
-  const hoverShadow = '4px 4px 8px #bebebe, -4px -4px 8px #ffffff';
-  const pressedShadow = 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff';
+  const raisedShadow = 'var(--neu-raised)';
+  const hoverShadow = 'var(--neu-subtle)'; // Closest to previous logic
+  const pressedShadow = 'var(--neu-pressed)';
   const ghostShadow = 'none';
-  const ghostHoverShadow = '3px 3px 6px #bebebe, -3px -3px 6px #ffffff';
+  const ghostHoverShadow = 'var(--neu-subtle)';
 
   const getShadow = () => {
     if (variant === 'ghost') {
@@ -57,12 +57,12 @@ export default function Button({
     backgroundColor: variant === 'ghost' && !isHovered 
       ? 'transparent' 
       : variant === 'primary' 
-        ? '#d8dfe8' // Subtle blue tint
+        ? 'var(--accent-primary)' // Note: This might need opacity adjustment or a separate variable for button bg
         : variant === 'danger'
-          ? '#e8d8d8' // Subtle red tint
-          : '#e0e0e0',
+          ? 'var(--accent-danger)'
+          : 'var(--bg-base)',
     boxShadow: getShadow(),
-    color: textColors[variant],
+    color: variant === 'primary' ? '#ffffff' : 'var(--text-primary)', // Primary usually white text
     fontWeight: variant === 'primary' ? 600 : 500,
     border: 'none',
     cursor: disabled || isLoading ? 'not-allowed' : 'pointer',

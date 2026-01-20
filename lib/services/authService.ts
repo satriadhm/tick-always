@@ -10,6 +10,7 @@ interface GoogleLoginResult {
     email: string;
     name: string;
     role?: string;
+    avatar?: string;
   };
   error?: string;
   message?: string;
@@ -54,7 +55,7 @@ class AuthService {
         };
       }
 
-      const { sub: googleId, email, name } = payload;
+      const { sub: googleId, email, name, picture } = payload;
 
       if (!email) {
         return {
@@ -64,13 +65,25 @@ class AuthService {
         };
       }
 
+
+
       // Find or create user
       let user = await User.findOne({ email: email.toLowerCase() });
 
       if (user) {
         // Update user with Google ID if not already set
+        let updates = false;
         if (!user.googleId) {
           user.googleId = googleId;
+          updates = true;
+        }
+        // Update avatar if available and different (or not set)
+        if (picture && user.avatar !== picture) {
+          user.avatar = picture;
+          updates = true;
+        }
+        
+        if (updates) {
           await user.save();
         }
       } else {
@@ -80,6 +93,7 @@ class AuthService {
           name: name || email.split('@')[0],
           googleId,
           role: 'user',
+          avatar: picture,
         });
       }
 
@@ -90,6 +104,7 @@ class AuthService {
           email: user.email,
           name: user.name,
           role: user.role || 'user',
+          avatar: user.avatar,
         },
       };
     } catch (error) {

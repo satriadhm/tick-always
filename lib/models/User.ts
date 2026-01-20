@@ -34,6 +34,10 @@ const UserSchema = new Schema<IUser>(
       default: 'user',
       enum: ['user', 'admin'],
     },
+    avatar: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

@@ -10,22 +10,24 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = '', style, ...props }, ref) => {
     const baseStyle: React.CSSProperties = {
-      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff',
+      boxShadow: 'var(--neu-inset)',
+      backgroundColor: 'var(--bg-base)',
+      color: 'var(--text-primary)',
       ...style,
     };
 
     const focusedStyle: React.CSSProperties = {
-      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(107,140,206,0.5)',
+      boxShadow: 'var(--neu-inset), 0 0 0 2px var(--accent-primary)',
     };
 
     const errorStyle: React.CSSProperties = {
-      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(206,107,107,0.5)',
+      boxShadow: 'var(--neu-inset), 0 0 0 2px var(--accent-danger)',
     };
 
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-[#4a4a4a] mb-2">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-2 transition-colors">
             {label}
           </label>
         )}
@@ -33,12 +35,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           className={`
             w-full px-4 py-3 
-            bg-[#e0e0e0] 
-            text-[#4a4a4a]
+            bg-[var(--bg-base)] 
+            text-[var(--text-primary)]
             rounded-2xl
             border-none
             outline-none
-            placeholder:text-[#8a8a8a]
+            placeholder:text-[var(--text-muted)]
             transition-all duration-200
             focus:outline-none
             ${className}
@@ -57,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <p className="mt-2 text-sm text-[#ce6b6b]">{error}</p>
+          <p className="mt-2 text-sm text-[var(--accent-danger)]">{error}</p>
         )}
       </div>
     );

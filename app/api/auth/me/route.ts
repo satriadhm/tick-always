@@ -23,6 +23,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       id: user._id.toString(),
       email: user.email,
       name: user.name,
+      avatar: user.avatar,
     };
 
     return NextResponse.json(
