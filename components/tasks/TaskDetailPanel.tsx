@@ -37,7 +37,10 @@ export default function TaskDetailPanel({
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState<Priority>('none');
+  
   const [tags, setTags] = useState<string[]>([]);
+  const [subtasks, setSubtasks] = useState<TaskData[]>([]);
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const titleInputRef = useRef<HTMLTextAreaElement>(null);
 
   const fetchTask = useCallback(async () => {
@@ -131,6 +134,73 @@ export default function TaskDetailPanel({
     if (confirm('Are you sure you want to delete this task?')) {
       await onDelete(taskId);
       onClose();
+    }
+  };
+
+  const fetchSubtasks = useCallback(async () => {
+    if (!taskId) return;
+    try {
+      const response = await fetch(`/api/tasks?parentTaskId=${taskId}&limit=100&sortBy=createdAt&sortOrder=asc`, {
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSubtasks(data.data.tasks);
+      }
+    } catch (error) {
+      console.error('Failed to fetch subtasks:', error);
+    }
+  }, [taskId]);
+
+  useEffect(() => {
+    if (taskId) {
+      fetchSubtasks();
+    }
+  }, [taskId, fetchSubtasks]);
+
+  const handleAddSubtask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!taskId || !newSubtaskTitle.trim()) return;
+
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newSubtaskTitle,
+          parentTaskId: taskId,
+        }),
+      });
+
+      if (response.ok) {
+        setNewSubtaskTitle('');
+        fetchSubtasks();
+      }
+    } catch (error) {
+      console.error('Failed to add subtask:', error);
+    }
+  };
+
+  const handleToggleSubtask = async (subtaskId: string, completed: boolean) => {
+    try {
+      await fetch(`/api/tasks/${subtaskId}/complete`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed }),
+      });
+      fetchSubtasks();
+    } catch (error) {
+      console.error('Failed to toggle subtask:', error);
+    }
+  };
+
+  const handleDeleteSubtask = async (subtaskId: string) => {
+    if (!confirm('Delete this subtask?')) return;
+    try {
+      await fetch(`/api/tasks/${subtaskId}`, { method: 'DELETE' });
+      fetchSubtasks();
+    } catch (error) {
+      console.error('Failed to delete subtask:', error);
     }
   };
 
@@ -358,10 +428,72 @@ export default function TaskDetailPanel({
         {/* Divider */}
         <div className="h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
 
-        {/* Checklist/Subtasks (placeholder) */}
+        {/* Subtasks (Checklist) */}
         <div>
-          <h3 className="text-sm font-medium text-[#4a4a4a] mb-2">Checklist</h3>
-          <p className="text-xs text-[#8a8a8a]">Subtasks coming soon...</p>
+          <h3 className="text-sm font-medium text-[#4a4a4a] mb-3">Checklist</h3>
+          
+          <div className="space-y-2 mb-3">
+            {subtasks.map((subtask) => (
+              <div 
+                key={subtask.id} 
+                className="flex items-center gap-3 p-2 rounded-lg group hover:bg-[#dcdcdc] transition-colors"
+              >
+                <button
+                  onClick={() => handleToggleSubtask(subtask.id, !subtask.completed)}
+                  className={`
+                    w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0
+                    transition-all duration-200
+                    ${subtask.completed
+                      ? 'bg-[#6b8cce] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2),inset_-1px_-1px_2px_rgba(255,255,255,0.3)]'
+                      : 'bg-[#e0e0e0] shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.9),inset_2px_2px_4px_rgba(190,190,190,0.9)]'
+                    }
+                  `}
+                >
+                  {subtask.completed && (
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </button>
+                <span className={`text-sm flex-1 ${subtask.completed ? 'text-[#8a8a8a] line-through' : 'text-[#4a4a4a]'}`}>
+                  {subtask.title}
+                </span>
+                <button
+                  onClick={() => handleDeleteSubtask(subtask.id)}
+                  className="p-1 text-[#ce6b6b] opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleAddSubtask} className="flex gap-2">
+            <input
+              type="text"
+              value={newSubtaskTitle}
+              onChange={(e) => setNewSubtaskTitle(e.target.value)}
+              placeholder="Add an item"
+              className="
+                flex-1 bg-[#e0e0e0] text-sm text-[#4a4a4a] px-3 py-2 rounded-lg outline-none
+                shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(190,190,190,0.8)]
+                placeholder:text-[#8a8a8a]
+              "
+            />
+            <button
+              type="submit"
+              disabled={!newSubtaskTitle.trim()}
+              className="
+                px-3 py-2 bg-[#e0e0e0] text-[#6b6b6b] rounded-lg text-sm font-medium
+                shadow-[-2px_-2px_4px_rgba(255,255,255,0.8),2px_2px_4px_rgba(190,190,190,0.8)]
+                active:shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.8),inset_2px_2px_4px_rgba(190,190,190,0.8)]
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-all
+              "
+            >
+              Add
+            </button>
+          </form>
         </div>
 
         {/* Activity Log */}

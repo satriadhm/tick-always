@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       const type = group._id as keyof typeof result;
       if (result[type]) {
         result[type].total = group.totalTypeAmount;
-        result[type].categories = group.categories.sort((a: any, b: any) => b.total - a.total);
+        result[type].categories = group.categories.sort((a: { total: number }, b: { total: number }) => b.total - a.total);
       }
     });
 

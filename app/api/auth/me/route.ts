@@ -25,6 +25,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
       name: user.name,
       avatar: user.avatar,
       preferences: user.preferences,
+      googleId: user.googleId,
     };
 
     return NextResponse.json(
