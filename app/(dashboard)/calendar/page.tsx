@@ -100,7 +100,6 @@ function CalendarContent() {
 
   const handleDayDoubleClick = (date: Date) => {
     // Open add task modal with pre-filled date
-    // This will be implemented when we add the task creation modal
     router.push(`/tasks?date=${format(date, 'yyyy-MM-dd')}`);
   };
 
@@ -111,7 +110,7 @@ function CalendarContent() {
   };
 
   return (
-    <div className="h-full bg-[#F7F7F7]">
+    <div className="h-full bg-[var(--bg-base)]">
       <div className="max-w-[1400px] mx-auto px-6 py-6">
         <CalendarToolbar
           currentDate={currentDate}
@@ -129,7 +128,12 @@ function CalendarContent() {
           <div className="lg:col-span-2">
             {isLoading ? (
               <div className="flex items-center justify-center h-96">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#3E7BFA]"></div>
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+                  style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
+                >
+                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#6b8cce] border-t-transparent"></div>
+                </div>
               </div>
             ) : (
               <CalendarMonthView
@@ -145,8 +149,11 @@ function CalendarContent() {
           {/* Task List for Selected Date */}
           <div className="lg:col-span-1">
             {selectedDate ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div 
+                className="bg-[#e0e0e0] rounded-2xl p-5"
+                style={{ boxShadow: '-4px -4px 8px rgba(255,255,255,0.9), 4px 4px 8px rgba(190,190,190,0.9)' }}
+              >
+                <h3 className="text-lg font-semibold text-[#4a4a4a] mb-4">
                   {format(selectedDate, 'EEEE, MMMM d')}
                 </h3>
                 <TaskList
@@ -154,8 +161,11 @@ function CalendarContent() {
                 />
               </div>
             ) : (
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <p className="text-gray-500 text-center py-8">
+              <div 
+                className="bg-[#e0e0e0] rounded-2xl p-5"
+                style={{ boxShadow: '-4px -4px 8px rgba(255,255,255,0.9), 4px 4px 8px rgba(190,190,190,0.9)' }}
+              >
+                <p className="text-[#8a8a8a] text-center py-8">
                   Select a date to view tasks
                 </p>
               </div>
@@ -171,10 +181,15 @@ function CalendarContent() {
 export default function CalendarPage() {
   return (
     <Suspense fallback={
-      <div className="h-full bg-[#F7F7F7] flex items-center justify-center">
+      <div className="h-full bg-[var(--bg-base)] flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#3E7BFA]"></div>
-          <p className="mt-4 text-gray-600">Loading calendar...</p>
+          <div 
+            className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+            style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
+          >
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#6b8cce] border-t-transparent"></div>
+          </div>
+          <p className="mt-4 text-[#6b6b6b]">Loading calendar...</p>
         </div>
       </div>
     }>

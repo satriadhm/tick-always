@@ -57,26 +57,19 @@ export default function Sidebar({ user }: SidebarProps) {
   const isActive = (href: string, exact: boolean = false) => {
     const [path, query] = href.split('?');
     
-    // Check if pathname matches
     if (exact) {
-      // For exact match, pathname must match exactly
       if (pathname !== path) return false;
-      // If there's a query, check it matches
       if (query) {
         const filter = searchParams.get('filter');
         return query.includes(`filter=${filter}`);
       }
-      // If no query in href and no query in URL, it's active
       return !searchParams.toString();
     } else {
-      // For non-exact match, check if pathname starts with the path
       if (!pathname.startsWith(path)) return false;
-      // If there's a query, check it matches
       if (query) {
         const filter = searchParams.get('filter');
         return query.includes(`filter=${filter}`);
       }
-      // If no query in href, it's active if pathname matches
       return pathname === path;
     }
   };
@@ -93,26 +86,37 @@ export default function Sidebar({ user }: SidebarProps) {
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-40 transition-all duration-200 ${
-        isCollapsed ? 'w-16' : 'w-[260px]'
-      }`}
+      className={`
+        bg-[#e0e0e0] h-screen fixed left-0 top-0 z-40 
+        transition-all duration-200
+        ${isCollapsed ? 'w-16' : 'w-[260px]'}
+      `}
+      style={{ 
+        boxShadow: '4px 0 12px rgba(190,190,190,0.6), -2px 0 8px rgba(255,255,255,0.4)' 
+      }}
     >
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="h-16 flex items-center px-4 border-b border-gray-200">
+        <div className="h-16 flex items-center px-4">
           {!isCollapsed ? (
-            <Link href="/tasks" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded bg-[#3E7BFA] flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <Link href="/tasks" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div 
+                className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+                style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
+              >
+                <svg className="w-4 h-4 text-[#6b8cce]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-lg font-semibold text-gray-900">Tick Always</span>
+              <span className="text-lg font-semibold text-[#4a4a4a]">Tick Always</span>
             </Link>
           ) : (
             <Link href="/tasks" className="flex items-center justify-center w-full hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded bg-[#3E7BFA] flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div 
+                className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+                style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
+              >
+                <svg className="w-4 h-4 text-[#6b8cce]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -120,24 +124,23 @@ export default function Sidebar({ user }: SidebarProps) {
           )}
         </div>
 
+        {/* Divider */}
+        <div className="mx-4 h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
+
         {/* Main Navigation */}
         <nav className="flex-1 overflow-y-auto py-6">
-          <div className="px-4 space-y-1">
+          <div className="px-4 space-y-2">
             {navigationItems.map((item) => {
               const active = isActive(item.href, item.exact);
               return (
-                <Link
+                <NavLink
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 ${
-                    active
-                      ? 'bg-[#E9F0FF] text-[#3E7BFA] border-l-4 border-[#3E7BFA]'
-                      : 'text-gray-700 hover:bg-[#F7F7F7]'
-                  }`}
-                >
-                  <span className="flex-shrink-0">{getIcon(item.icon)}</span>
-                  {!isCollapsed && <span className="text-sm font-medium">{item.name}</span>}
-                </Link>
+                  active={active}
+                  icon={getIcon(item.icon)}
+                  label={item.name}
+                  isCollapsed={isCollapsed}
+                />
               );
             })}
           </div>
@@ -145,76 +148,170 @@ export default function Sidebar({ user }: SidebarProps) {
           {/* Lists Section */}
           {!isCollapsed && (
             <div className="mt-8 px-4">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-semibold text-[#8a8a8a] uppercase tracking-wider mb-3 px-4">
                 Lists
               </h3>
               <div className="space-y-1">
-                {/* Custom lists will be added here later */}
-                <div className="text-sm text-gray-500 px-3 py-2">No custom lists yet</div>
+                <div className="text-sm text-[#8a8a8a] px-4 py-2">No custom lists yet</div>
               </div>
             </div>
           )}
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="p-4">
+          {/* Divider */}
+          <div className="mb-4 h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
+          
           {!isCollapsed && user && (
             <div className="mb-4">
-              <div className="flex items-center gap-3 px-3 py-2">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-medium flex-shrink-0">
+              <div 
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#e0e0e0]"
+                style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.8), 3px 3px 6px rgba(190,190,190,0.8)' }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-[#6b8cce] text-sm font-semibold flex-shrink-0 bg-[#e0e0e0]"
+                  style={{ boxShadow: 'inset -2px -2px 4px rgba(255,255,255,0.9), inset 2px 2px 4px rgba(190,190,190,0.9)' }}
+                >
                   {user.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  <p className="text-sm font-medium text-[#4a4a4a] truncate">{user.name}</p>
+                  <p className="text-xs text-[#8a8a8a] truncate">{user.email}</p>
                 </div>
               </div>
             </div>
           )}
-          <div className="flex flex-col gap-1">
+          
+          <div className="flex flex-col gap-2">
             {!isCollapsed && (
               <>
-                <button
-                  type="button"
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-[#F7F7F7] rounded-lg transition-colors"
-                >
+                <SidebarButton>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span>Settings</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-[#F7F7F7] rounded-lg transition-colors"
-                >
+                </SidebarButton>
+                <SidebarButton onClick={handleLogout} hoverColor="#ce6b6b">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                   <span>Logout</span>
-                </button>
+                </SidebarButton>
               </>
             )}
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="flex items-center justify-center w-full px-3 py-2 text-sm text-gray-500 hover:bg-[#F7F7F7] rounded-lg transition-colors"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {isCollapsed ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              )}
-            </button>
+            <CollapseButton isCollapsed={isCollapsed} onClick={() => setIsCollapsed(!isCollapsed)} />
           </div>
         </div>
       </div>
     </aside>
+  );
+}
+
+// NavLink component with neumorphic styling
+interface NavLinkProps {
+  href: string;
+  active: boolean;
+  icon: React.ReactNode;
+  label: string;
+  isCollapsed: boolean;
+}
+
+function NavLink({ href, active, icon, label, isCollapsed }: NavLinkProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const getShadow = () => {
+    if (active) {
+      return 'inset -3px -3px 6px rgba(255,255,255,0.9), inset 3px 3px 6px rgba(190,190,190,0.9)';
+    }
+    if (isHovered) {
+      return '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+    }
+    return 'none';
+  };
+
+  return (
+    <Link
+      href={href}
+      className={`
+        flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+        ${active ? 'text-[#6b8cce] font-medium bg-[#e0e0e0]' : 'text-[#6b6b6b]'}
+        ${isHovered && !active ? 'text-[#4a4a4a] bg-[#e0e0e0]' : ''}
+      `}
+      style={{ boxShadow: getShadow() }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <span className="flex-shrink-0">{icon}</span>
+      {!isCollapsed && <span className="text-sm">{label}</span>}
+    </Link>
+  );
+}
+
+// SidebarButton component
+interface SidebarButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  hoverColor?: string;
+}
+
+function SidebarButton({ children, onClick, hoverColor = '#4a4a4a' }: SidebarButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#6b6b6b] rounded-xl transition-all duration-200"
+      style={{ 
+        boxShadow: isHovered ? '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)' : 'none',
+        color: isHovered ? hoverColor : '#6b6b6b',
+        backgroundColor: isHovered ? '#e0e0e0' : 'transparent',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+    </button>
+  );
+}
+
+// CollapseButton component
+interface CollapseButtonProps {
+  isCollapsed: boolean;
+  onClick: () => void;
+}
+
+function CollapseButton({ isCollapsed, onClick }: CollapseButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const getShadow = () => {
+    if (isHovered) {
+      return '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)';
+    }
+    return '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center justify-center w-full px-3 py-2.5 text-sm text-[#8a8a8a] rounded-xl transition-all duration-200 bg-[#e0e0e0]"
+      style={{ boxShadow: getShadow() }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+    >
+      {isCollapsed ? (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      )}
+    </button>
   );
 }

@@ -31,7 +31,7 @@ export default function TaskDetailPanel({
   }
   const [task, setTask] = useState<TaskData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [, setIsSaving] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -138,45 +138,84 @@ export default function TaskDetailPanel({
 
   if (isLoading) {
     return (
-      <div className="fixed right-0 top-0 h-full w-[480px] bg-white border-l border-gray-200 shadow-xl z-50 flex items-center justify-center">
+      <div 
+        className="fixed right-0 top-0 h-full w-[480px] bg-[#e0e0e0] z-50 flex items-center justify-center"
+        style={{ boxShadow: '-8px 0 16px rgba(190,190,190,0.5)' }}
+      >
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[#3E7BFA] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-500">Loading...</p>
+          <div 
+            className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+            style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
+          >
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#6b8cce] border-t-transparent"></div>
+          </div>
+          <p className="mt-4 text-sm text-[#6b6b6b]">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[480px] bg-white border-l border-gray-200 shadow-xl z-50 overflow-y-auto animate-in slide-in-from-right duration-200">
+    <div 
+      className="fixed right-0 top-0 h-full w-[480px] bg-[#e0e0e0] z-50 overflow-y-auto animate-in slide-in-from-right duration-200"
+      style={{ boxShadow: '-8px 0 16px rgba(190,190,190,0.5)' }}
+    >
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-        <h2 className="text-lg font-semibold text-gray-900">Task Details</h2>
+      <div className="sticky top-0 bg-[#e0e0e0] px-6 py-4 flex items-center justify-between z-10">
+        <h2 className="text-lg font-semibold text-[#4a4a4a]">Task Details</h2>
         <button
           onClick={onClose}
-          className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-[#6b6b6b] rounded-xl transition-all duration-200 bg-[#e0e0e0] hover:text-[#4a4a4a]"
+          style={{ boxShadow: '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+          }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
+      {/* Divider */}
+      <div className="mx-6 h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
+
       <div className="p-6 space-y-6">
         {/* Completion Checkbox */}
         <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            checked={task?.completed || false}
-            onChange={handleToggleComplete}
-            className="w-5 h-5 rounded border-gray-300 text-[#3E7BFA] focus:ring-[#3E7BFA]"
-          />
-          <span className="text-sm text-gray-600">
+          <button
+            onClick={handleToggleComplete}
+            className={`
+              w-6 h-6 rounded-full flex items-center justify-center
+              transition-all duration-200
+              ${task?.completed
+                ? `
+                  bg-[#6b8cce]
+                  shadow-[
+                    inset_1px_1px_2px_rgba(0,0,0,0.2),
+                    inset_-1px_-1px_2px_rgba(255,255,255,0.3)
+                  ]
+                `
+                : `
+                  bg-[#e0e0e0]
+                  shadow-[
+                    inset_-2px_-2px_4px_rgba(255,255,255,0.9),
+                    inset_2px_2px_4px_rgba(190,190,190,0.9)
+                  ]
+                `
+              }
+            `}
+          >
+            {task?.completed && (
+              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </button>
+          <span className="text-sm text-[#6b6b6b]">
             {task?.completed ? 'Completed' : 'Mark as complete'}
           </span>
         </div>
@@ -202,14 +241,27 @@ export default function TaskDetailPanel({
                   setTitle(task?.title || '');
                 }
               }}
-              className="w-full text-xl font-semibold leading-tight border-b-2 border-gray-300 focus:border-[#3E7BFA] pb-1 outline-none resize-none"
+              className="
+                w-full text-xl font-semibold leading-tight pb-2 outline-none resize-none
+                bg-transparent text-[#4a4a4a]
+                border-b-2 border-[#6b8cce]
+              "
               rows={1}
               style={{ minHeight: '32px' }}
             />
           ) : (
             <h2
               onClick={() => setIsEditingTitle(true)}
-              className="text-xl font-semibold leading-tight text-gray-900 cursor-text hover:bg-gray-50 -mx-2 px-2 py-1 rounded"
+              className="
+                text-xl font-semibold leading-tight text-[#4a4a4a] cursor-text 
+                -mx-2 px-2 py-2 rounded-xl
+                hover:bg-[#e0e0e0]
+                hover:shadow-[
+                  inset_-2px_-2px_4px_rgba(255,255,255,0.8),
+                  inset_2px_2px_4px_rgba(190,190,190,0.8)
+                ]
+                transition-all duration-200
+              "
             >
               {title || 'Untitled Task'}
             </h2>
@@ -224,23 +276,36 @@ export default function TaskDetailPanel({
             onBlur={handleSave}
             placeholder="Add description…"
             rows={6}
-            className="w-full text-sm text-gray-700 mt-3 mb-2 min-h-[120px] border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3E7BFA] focus:border-transparent resize-none"
+            className="
+              w-full text-sm text-[#4a4a4a] mt-3 mb-2 min-h-[120px] 
+              bg-[#e0e0e0] rounded-xl px-4 py-3 resize-none
+              shadow-[
+                inset_-3px_-3px_6px_rgba(255,255,255,0.9),
+                inset_3px_3px_6px_rgba(190,190,190,0.9)
+              ]
+              focus:outline-none
+              focus:shadow-[
+                inset_-3px_-3px_6px_rgba(255,255,255,0.9),
+                inset_3px_3px_6px_rgba(190,190,190,0.9),
+                0_0_0_2px_rgba(107,140,206,0.5)
+              ]
+              placeholder:text-[#8a8a8a]
+              transition-all duration-200
+            "
           />
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200"></div>
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
 
         {/* Property Rows */}
-        <div className="space-y-1">
+        <div className="space-y-2">
           {/* Due Date */}
           <PropertyRow
             icon="📅"
             label="Due Date"
             value={dueDate ? format(new Date(dueDate), 'MMM d, yyyy') : 'No date'}
-            onClick={() => {
-              // Open date picker popover (future)
-            }}
+            onClick={() => {}}
             onValueChange={(value) => {
               setDueDate(value);
               handleSave();
@@ -253,9 +318,7 @@ export default function TaskDetailPanel({
             icon="🔄"
             label="Repeat"
             value={task?.isRecurring ? 'Repeats' : 'Does not repeat'}
-            onClick={() => {
-              // Open repeat selector (future)
-            }}
+            onClick={() => {}}
           />
 
           {/* Reminder */}
@@ -263,9 +326,7 @@ export default function TaskDetailPanel({
             icon="⏰"
             label="Reminder"
             value="None"
-            onClick={() => {
-              // Open reminder selector (future)
-            }}
+            onClick={() => {}}
           />
 
           {/* Tags */}
@@ -273,9 +334,7 @@ export default function TaskDetailPanel({
             icon="🏷️"
             label="Tags"
             value={tags.length > 0 ? tags.join(', ') : 'No tags'}
-            onClick={() => {
-              // Open tag selector (future)
-            }}
+            onClick={() => {}}
           />
 
           {/* Priority */}
@@ -287,9 +346,7 @@ export default function TaskDetailPanel({
                 ? 'None'
                 : priority.charAt(0).toUpperCase() + priority.slice(1)
             }
-            onClick={() => {
-              // Open priority selector (future)
-            }}
+            onClick={() => {}}
             onValueChange={(value) => {
               setPriority(value as Priority);
               handleSave();
@@ -299,22 +356,23 @@ export default function TaskDetailPanel({
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-200"></div>
+        <div className="h-0.5 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
 
         {/* Checklist/Subtasks (placeholder) */}
         <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Checklist</h3>
-          <p className="text-xs text-gray-500">Subtasks coming soon...</p>
+          <h3 className="text-sm font-medium text-[#4a4a4a] mb-2">Checklist</h3>
+          <p className="text-xs text-[#8a8a8a]">Subtasks coming soon...</p>
         </div>
 
         {/* Activity Log */}
         {task && task.createdAt && (
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
+          <div className="pt-4">
+            <div className="h-0.5 mb-4 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
+            <p className="text-xs text-[#8a8a8a]">
               Created: {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm')}
             </p>
             {task.updatedAt && task.updatedAt !== task.createdAt && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[#8a8a8a] mt-1">
                 Updated: {format(new Date(task.updatedAt), 'MMM d, yyyy HH:mm')}
               </p>
             )}
@@ -322,18 +380,21 @@ export default function TaskDetailPanel({
         )}
 
         {/* Delete Button */}
-        <div className="pt-4 border-t border-gray-200">
+        <div className="pt-4">
+          <div className="h-0.5 mb-4 bg-gradient-to-r from-transparent via-[#bebebe] to-transparent rounded-full" />
           <button
             onClick={handleDelete}
-            className="w-full text-red-500 hover:bg-red-50 p-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full text-[#ce6b6b] p-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-[#e0e0e0]"
+            style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.8), 3px 3px 6px rgba(190,190,190,0.8)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '-3px -3px 6px rgba(255,255,255,0.8), 3px 3px 6px rgba(190,190,190,0.8)';
+            }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             Delete Task
           </button>
@@ -366,10 +427,13 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
 
   if (isEditing && type === 'date') {
     return (
-      <div className="flex items-center justify-between py-3 px-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+      <div 
+        className="flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer bg-[#e0e0e0]"
+        style={{ boxShadow: 'inset -2px -2px 4px rgba(255,255,255,0.8), inset 2px 2px 4px rgba(190,190,190,0.8)' }}
+      >
         <div className="flex items-center gap-3">
           <span>{icon}</span>
-          <span className="text-sm text-gray-700">{label}</span>
+          <span className="text-sm text-[#4a4a4a]">{label}</span>
         </div>
         <input
           type="date"
@@ -383,7 +447,8 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
               setIsEditing(false);
             }
           }}
-          className="text-sm text-gray-600 border border-gray-300 rounded px-2 py-1"
+          className="text-sm text-[#4a4a4a] bg-[#e0e0e0] rounded-lg px-2 py-1 border-none outline-none"
+          style={{ boxShadow: '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)' }}
           autoFocus
         />
       </div>
@@ -392,18 +457,25 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
 
   if (isEditing && type === 'priority') {
     return (
-      <div className="flex items-center justify-between py-3 px-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+      <div 
+        className="flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer bg-[#e0e0e0]"
+        style={{ boxShadow: 'inset -2px -2px 4px rgba(255,255,255,0.8), inset 2px 2px 4px rgba(190,190,190,0.8)' }}
+      >
         <div className="flex items-center gap-3">
           <span>{icon}</span>
-          <span className="text-sm text-gray-700">{label}</span>
+          <span className="text-sm text-[#4a4a4a]">{label}</span>
         </div>
         <select
           value={editValue}
           onChange={(e) => {
             setEditValue(e.target.value);
-            handleSave();
+            if (onValueChange) {
+              onValueChange(e.target.value);
+            }
+            setIsEditing(false);
           }}
-          className="text-sm text-gray-600 border border-gray-300 rounded px-2 py-1"
+          className="text-sm text-[#4a4a4a] bg-[#e0e0e0] rounded-lg px-2 py-1 border-none outline-none"
+          style={{ boxShadow: '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)' }}
           autoFocus
         >
           <option value="none">None</option>
@@ -415,9 +487,18 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
     );
   }
 
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
-      className="flex items-center justify-between py-3 px-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+      className="flex items-center justify-between py-3 px-4 rounded-xl cursor-pointer transition-all duration-200 bg-[#e0e0e0]"
+      style={{ 
+        boxShadow: isHovered 
+          ? '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' 
+          : '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)' 
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
         if (onValueChange) {
           setIsEditing(true);
@@ -428,9 +509,9 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
     >
       <div className="flex items-center gap-3">
         <span>{icon}</span>
-        <span className="text-sm text-gray-700">{label}</span>
+        <span className="text-sm text-[#4a4a4a]">{label}</span>
       </div>
-      <span className={`text-sm ${value === 'No date' || value === 'No tags' || value === 'None' ? 'text-gray-500' : 'text-[#3E7BFA]'}`}>
+      <span className={`text-sm ${value === 'No date' || value === 'No tags' || value === 'None' ? 'text-[#8a8a8a]' : 'text-[#6b8cce]'}`}>
         {value}
       </span>
     </div>

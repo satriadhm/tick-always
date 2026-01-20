@@ -59,7 +59,13 @@ export async function getCurrentUser(request: NextRequest): Promise<JWTPayload |
  * Get user from cookie (alternative method)
  */
 export function getCurrentUserFromCookie(request: NextRequest): JWTPayload | null {
-  const token = request.cookies.get('auth-token')?.value;
+  // Check for accessToken first (used by Google OAuth and login)
+  let token = request.cookies.get('accessToken')?.value;
+  
+  // Fallback to auth-token for backwards compatibility
+  if (!token) {
+    token = request.cookies.get('auth-token')?.value;
+  }
   
   if (!token) {
     return null;

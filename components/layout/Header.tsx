@@ -13,13 +13,12 @@ export default function Header() {
   const fetchUser = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/me', {
-        credentials: 'include', // Include cookies
+        credentials: 'include',
       });
       const data = await response.json();
       if (data.success) {
         setUser(data.data.user);
       } else {
-        // If not authenticated, redirect to login
         router.push('/login');
       }
     } catch (error) {
@@ -45,38 +44,41 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="bg-[#e0e0e0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/tasks" className="text-xl font-bold text-gray-900">
+            <Link 
+              href="/tasks" 
+              className="text-xl font-bold text-[#4a4a4a] hover:text-[#6b8cce] transition-colors"
+            >
               Tick Always
             </Link>
-            <nav className="hidden md:flex space-x-4">
-              <Link
-                href="/tasks"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Tasks
-              </Link>
-              <Link
-                href="/calendar"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Calendar
-              </Link>
-              <Link
-                href="/habits"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Habits
-              </Link>
+            <nav className="hidden md:flex space-x-2">
+              {['Tasks', 'Calendar', 'Habits'].map((item) => (
+                <Link
+                  key={item}
+                  href={`/${item.toLowerCase()}`}
+                  className="
+                    text-[#6b6b6b] px-4 py-2 rounded-xl text-sm font-medium
+                    transition-all duration-200
+                    hover:text-[#4a4a4a]
+                    hover:bg-[#e0e0e0]
+                    hover:shadow-[
+                      -2px_-2px_4px_rgba(255,255,255,0.8),
+                      2px_2px_4px_rgba(190,190,190,0.8)
+                    ]
+                  "
+                >
+                  {item}
+                </Link>
+              ))}
             </nav>
           </div>
 
           <div className="flex items-center space-x-4">
             {!isLoading && user && (
-              <span className="text-sm text-gray-700">{user.name}</span>
+              <span className="text-sm text-[#6b6b6b] font-medium">{user.name}</span>
             )}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Logout
@@ -87,4 +89,3 @@ export default function Header() {
     </header>
   );
 }
-

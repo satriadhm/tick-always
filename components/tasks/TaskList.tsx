@@ -215,7 +215,7 @@ export default function TaskList({ initialFilter, dateFilter: dateFilterProp }: 
     : tasks.filter((task) => !task.completed);
 
   return (
-    <div className="flex h-full bg-[#F7F7F7]">
+    <div className="flex h-full bg-[var(--bg-base)]">
       {/* Main Content Area - 760px max-width, centered */}
       <div
         className={`flex-1 transition-all duration-200 ${
@@ -224,7 +224,7 @@ export default function TaskList({ initialFilter, dateFilter: dateFilterProp }: 
       >
         <div className="max-w-[760px] mx-auto px-6 py-6">
           {/* Page Title Row */}
-          <div className="sticky top-0 bg-[#F7F7F7] z-10 pb-4 mb-4">
+          <div className="sticky top-0 bg-[var(--bg-base)] z-10 pb-4 mb-4">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-gray-900">{getPageTitle()}</h1>
               <div className="flex items-center gap-2">

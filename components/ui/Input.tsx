@@ -8,23 +8,56 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = '', ...props }, ref) => {
+  ({ label, error, className = '', style, ...props }, ref) => {
+    const baseStyle: React.CSSProperties = {
+      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff',
+      ...style,
+    };
+
+    const focusedStyle: React.CSSProperties = {
+      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(107,140,206,0.5)',
+    };
+
+    const errorStyle: React.CSSProperties = {
+      boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(206,107,107,0.5)',
+    };
+
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[#4a4a4a] mb-2">
             {label}
           </label>
         )}
         <input
           ref={ref}
-          className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            error ? 'border-red-500' : 'border-gray-300'
-          } ${className}`}
+          className={`
+            w-full px-4 py-3 
+            bg-[#e0e0e0] 
+            text-[#4a4a4a]
+            rounded-2xl
+            border-none
+            outline-none
+            placeholder:text-[#8a8a8a]
+            transition-all duration-200
+            focus:outline-none
+            ${className}
+          `}
+          style={error ? errorStyle : baseStyle}
+          onFocus={(e) => {
+            if (!error) {
+              e.currentTarget.style.boxShadow = focusedStyle.boxShadow as string;
+            }
+          }}
+          onBlur={(e) => {
+            if (!error) {
+              e.currentTarget.style.boxShadow = baseStyle.boxShadow as string;
+            }
+          }}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
+          <p className="mt-2 text-sm text-[#ce6b6b]">{error}</p>
         )}
       </div>
     );
@@ -34,4 +67,3 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 export default Input;
-

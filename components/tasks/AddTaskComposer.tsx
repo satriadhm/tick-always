@@ -75,14 +75,23 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
   if (!isExpanded) {
     return (
       <div
-        className="h-11 border border-gray-200 rounded-xl px-3 flex items-center cursor-text"
+        className="h-12 px-4 flex items-center cursor-text transition-all duration-200 rounded-xl bg-[#e0e0e0]"
+        style={{
+          boxShadow: '-3px -3px 6px rgba(255,255,255,0.8), 3px 3px 6px rgba(190,190,190,0.8)',
+        }}
         onClick={() => {
           setIsExpanded(true);
-          setTimeout(() => inputRef.current?.focus(), 0);
+          setTimeout(() => textareaRef.current?.focus(), 0);
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '-4px -4px 8px rgba(255,255,255,0.9), 4px 4px 8px rgba(190,190,190,0.9)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '-3px -3px 6px rgba(255,255,255,0.8), 3px 3px 6px rgba(190,190,190,0.8)';
         }}
       >
-        <span className="text-gray-400 mr-2">+</span>
-        <span className="text-gray-500 text-sm">Add Task</span>
+        <span className="text-[#8a8a8a] mr-2 text-lg">+</span>
+        <span className="text-[#6b6b6b] text-sm">Add Task</span>
       </div>
     );
   }
@@ -90,7 +99,10 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white shadow-sm rounded-xl border border-gray-200 p-4"
+      className="rounded-2xl p-5 bg-[#e0e0e0]"
+      style={{
+        boxShadow: '-6px -6px 12px rgba(255,255,255,0.9), 6px 6px 12px rgba(190,190,190,0.9)',
+      }}
     >
       {/* Multi-line textarea */}
       <textarea
@@ -99,19 +111,25 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Task title..."
-        className="w-full min-h-[70px] border-none outline-none resize-none text-[15px] font-medium text-gray-800 placeholder-gray-400"
+        className="w-full min-h-[70px] resize-none text-[15px] font-medium rounded-xl p-4 bg-[#e0e0e0] text-[#4a4a4a] placeholder-[#8a8a8a] outline-none"
+        style={{
+          boxShadow: 'inset -3px -3px 6px rgba(190,190,190,0.9), inset 3px 3px 6px rgba(255,255,255,0.9)',
+        }}
         autoFocus
       />
 
       {/* Button Strip */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mt-4 pt-4">
+        <div className="flex items-center gap-3">
           {/* Due Date */}
           <input
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="text-xs px-2 py-1 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
+            className="text-xs px-3 py-2 cursor-pointer rounded-lg bg-[#e0e0e0] text-[#4a4a4a] outline-none"
+            style={{
+              boxShadow: 'inset -2px -2px 4px rgba(190,190,190,0.8), inset 2px 2px 4px rgba(255,255,255,0.8)',
+            }}
             title="Due Date"
           />
 
@@ -119,7 +137,10 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value as Priority)}
-            className="text-xs px-2 py-1 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
+            className="text-xs px-3 py-2 cursor-pointer rounded-lg bg-[#e0e0e0] text-[#4a4a4a] outline-none"
+            style={{
+              boxShadow: 'inset -2px -2px 4px rgba(190,190,190,0.8), inset 2px 2px 4px rgba(255,255,255,0.8)',
+            }}
             title="Priority"
           >
             <option value="none">Priority</option>
@@ -131,25 +152,54 @@ export default function AddTaskComposer({ onAddTask }: AddTaskComposerProps) {
           {/* Tag (simplified for now) */}
           <button
             type="button"
-            className="text-xs px-2 py-1 border border-gray-200 rounded-md hover:bg-gray-50 text-gray-600"
+            className="text-xs px-3 py-2 rounded-lg bg-[#e0e0e0] text-[#6b6b6b] transition-all duration-200"
+            style={{
+              boxShadow: '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '-1px -1px 2px rgba(255,255,255,0.6), 1px 1px 2px rgba(190,190,190,0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+            }}
             title="Add Tag"
           >
             Tag
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={handleCancel}
-            className="text-sm text-gray-600 hover:text-gray-800 px-3 py-1 rounded-md hover:bg-gray-100"
+            className="text-sm px-4 py-2 rounded-lg bg-[#e0e0e0] text-[#6b6b6b] transition-all duration-200 hover:text-[#4a4a4a]"
+            style={{
+              boxShadow: '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '-1px -1px 2px rgba(255,255,255,0.6), 1px 1px 2px rgba(190,190,190,0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+            }}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={!title.trim()}
-            className="text-sm bg-[#3E7BFA] text-white px-4 py-1.5 rounded-md hover:bg-[#2563EB] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-sm px-5 py-2 rounded-lg bg-[#6b8cce] text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              boxShadow: '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)',
+            }}
+            onMouseEnter={(e) => {
+              if (!e.currentTarget.disabled) {
+                e.currentTarget.style.boxShadow = '-1px -1px 2px rgba(255,255,255,0.6), 1px 1px 2px rgba(190,190,190,0.6)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+            }}
           >
             Add
           </button>

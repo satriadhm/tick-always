@@ -23,9 +23,9 @@ interface TaskItemProps {
 
 const priorityColors = {
   none: '',
-  low: 'bg-blue-500',
-  medium: 'bg-orange-500',
-  high: 'bg-red-500',
+  low: 'bg-[#6bb38c]',
+  medium: 'bg-[#ceb06b]',
+  high: 'bg-[#ce6b6b]',
 };
 
 export default function TaskItem({
@@ -46,7 +46,7 @@ export default function TaskItem({
 
       if (isToday(date)) {
         return (
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-[#6b6b6b] font-medium">
             Today
           </span>
         );
@@ -54,14 +54,14 @@ export default function TaskItem({
 
       if (isPast(date) && !task.completed) {
         return (
-          <span className="text-xs text-red-600">
+          <span className="text-xs text-[#ce6b6b] font-medium">
             Overdue
           </span>
         );
       }
 
       return (
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-[#8a8a8a]">
           {dateStr}
         </span>
       );
@@ -70,36 +70,79 @@ export default function TaskItem({
     }
   };
 
+  // Determine shadow based on state
+  const getShadowStyle = () => {
+    if (isSelected) {
+      return 'inset -3px -3px 6px rgba(255,255,255,0.9), inset 3px 3px 6px rgba(190,190,190,0.9)';
+    }
+    if (task.completed) {
+      return '-2px -2px 4px rgba(255,255,255,0.6), 2px 2px 4px rgba(190,190,190,0.6)';
+    }
+    return '-4px -4px 8px rgba(255,255,255,0.9), 4px 4px 8px rgba(190,190,190,0.9)';
+  };
+
+  const getHoverShadow = () => {
+    if (isSelected) {
+      return 'inset -3px -3px 6px rgba(255,255,255,0.9), inset 3px 3px 6px rgba(190,190,190,0.9)';
+    }
+    if (task.completed) {
+      return '-3px -3px 6px rgba(255,255,255,0.7), 3px 3px 6px rgba(190,190,190,0.7)';
+    }
+    return '-5px -5px 10px rgba(255,255,255,0.95), 5px 5px 10px rgba(190,190,190,0.95)';
+  };
+
   return (
     <div
-      className={`group flex items-center gap-3 py-2.5 px-4 rounded-lg border transition-all duration-150 cursor-pointer ${
-        isSelected
-          ? 'bg-gray-50 border-gray-300'
-          : task.completed
-          ? 'bg-white border-gray-200 opacity-60 hover:border-gray-300'
-          : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
-      }`}
-      style={{ minHeight: '44px' }}
+      className={`
+        group flex items-center gap-4 py-3.5 px-5 rounded-2xl 
+        transition-all duration-200 cursor-pointer
+        bg-[#e0e0e0]
+        ${task.completed ? 'opacity-60' : ''}
+      `}
+      style={{ 
+        minHeight: '48px',
+        boxShadow: isHovered ? getHoverShadow() : getShadowStyle(),
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onClick(task.id)}
     >
-      {/* Checkbox - TickTick style */}
+      {/* Checkbox - Neumorphic style */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           onToggleComplete(task.id, !task.completed);
         }}
-        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ${
-          task.completed
-            ? 'bg-[#3E7BFA] border-[#3E7BFA]'
-            : 'border-gray-300 hover:border-[#3E7BFA] bg-white'
-        }`}
+        className={`
+          w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 
+          transition-all duration-200
+          ${task.completed
+            ? `
+              bg-[#6b8cce]
+              shadow-[
+                inset_1px_1px_2px_rgba(0,0,0,0.2),
+                inset_-1px_-1px_2px_rgba(255,255,255,0.3)
+              ]
+            `
+            : `
+              bg-[#e0e0e0]
+              shadow-[
+                inset_-2px_-2px_4px_rgba(255,255,255,0.9),
+                inset_2px_2px_4px_rgba(190,190,190,0.9)
+              ]
+              hover:shadow-[
+                inset_-2px_-2px_4px_rgba(255,255,255,0.9),
+                inset_2px_2px_4px_rgba(190,190,190,0.9),
+                0_0_0_2px_rgba(107,140,206,0.4)
+              ]
+            `
+          }
+        `}
         aria-label={task.completed ? 'Mark as incomplete' : 'Mark as complete'}
       >
         {task.completed && (
           <svg
-            className="w-3 h-3 text-white"
+            className="w-3.5 h-3.5 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -119,8 +162,8 @@ export default function TaskItem({
         {/* Title */}
         <div className="flex items-center gap-2">
           <h3
-            className={`text-[15px] font-medium text-gray-800 line-clamp-1 ${
-              task.completed ? 'line-through text-gray-500' : ''
+            className={`text-[15px] font-medium text-[#4a4a4a] line-clamp-1 ${
+              task.completed ? 'line-through text-[#8a8a8a]' : ''
             }`}
           >
             {task.title}
@@ -129,16 +172,16 @@ export default function TaskItem({
 
         {/* Metadata Row */}
         {(task.dueDate || task.priority !== 'none' || task.tags.length > 0 || task.isRecurring) && (
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-2 mt-1">
             {getDueDateBadge()}
             {task.priority !== 'none' && (
               <div
-                className={`w-2 h-2 rounded-full ${priorityColors[task.priority]}`}
+                className={`w-2.5 h-2.5 rounded-full ${priorityColors[task.priority]}`}
                 title={`Priority: ${task.priority}`}
               />
             )}
             {task.isRecurring && (
-              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-[#8a8a8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <title>Recurring task</title>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -148,13 +191,20 @@ export default function TaskItem({
                 {task.tags.slice(0, 2).map((tag, idx) => (
                   <span
                     key={idx}
-                    className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-600"
+                    className="
+                      text-xs px-2 py-0.5 rounded-lg text-[#6b6b6b]
+                      bg-[#e0e0e0]
+                      shadow-[
+                        -1px_-1px_2px_rgba(255,255,255,0.8),
+                        1px_1px_2px_rgba(190,190,190,0.8)
+                      ]
+                    "
                   >
                     {tag}
                   </span>
                 ))}
                 {task.tags.length > 2 && (
-                  <span className="text-xs text-gray-500">+{task.tags.length - 2}</span>
+                  <span className="text-xs text-[#8a8a8a]">+{task.tags.length - 2}</span>
                 )}
               </div>
             )}
@@ -170,7 +220,15 @@ export default function TaskItem({
               e.stopPropagation();
               // Star functionality (future)
             }}
-            className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 transition-colors"
+            className="
+              p-2 rounded-xl text-[#8a8a8a] transition-all duration-200
+              hover:text-[#ceb06b]
+              hover:bg-[#e0e0e0]
+              hover:shadow-[
+                -2px_-2px_4px_rgba(255,255,255,0.8),
+                2px_2px_4px_rgba(190,190,190,0.8)
+              ]
+            "
             title="Star"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +240,15 @@ export default function TaskItem({
               e.stopPropagation();
               // Reminder functionality (future)
             }}
-            className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 transition-colors"
+            className="
+              p-2 rounded-xl text-[#8a8a8a] transition-all duration-200
+              hover:text-[#6b8cce]
+              hover:bg-[#e0e0e0]
+              hover:shadow-[
+                -2px_-2px_4px_rgba(255,255,255,0.8),
+                2px_2px_4px_rgba(190,190,190,0.8)
+              ]
+            "
             title="Reminder"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +262,15 @@ export default function TaskItem({
                 onDelete(task.id);
               }
             }}
-            className="p-1.5 rounded-md hover:bg-red-50 hover:text-red-600 text-gray-500 transition-colors"
+            className="
+              p-2 rounded-xl text-[#8a8a8a] transition-all duration-200
+              hover:text-[#ce6b6b]
+              hover:bg-[#e0e0e0]
+              hover:shadow-[
+                -2px_-2px_4px_rgba(255,255,255,0.8),
+                2px_2px_4px_rgba(190,190,190,0.8)
+              ]
+            "
             title="Delete"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

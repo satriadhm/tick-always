@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { format } from 'date-fns';
 
 interface CalendarToolbarProps {
@@ -24,79 +25,35 @@ export default function CalendarToolbar({
   onHideCompletedChange,
 }: CalendarToolbarProps) {
   return (
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <div className="flex items-center justify-between mb-6 pb-4">
       <div className="flex items-center gap-4">
-        <button
-          onClick={onToday}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Today
-        </button>
+        <ToolbarButton onClick={onToday}>Today</ToolbarButton>
         <div className="flex items-center gap-2">
-          <button
-            onClick={onPrevious}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Previous"
-          >
+          <NavButton onClick={onPrevious} aria-label="Previous">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-          </button>
-          <button
-            onClick={onNext}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Next"
-          >
+          </NavButton>
+          <NavButton onClick={onNext} aria-label="Next">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </button>
+          </NavButton>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 ml-4">
+        <h2 className="text-xl font-semibold text-[#4a4a4a] ml-4">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => onViewModeChange('month')}
-            className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
-              viewMode === 'month'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Month
-          </button>
-          <button
-            onClick={() => onViewModeChange('week')}
-            className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
-              viewMode === 'week'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Week
-          </button>
-          <button
-            onClick={() => onViewModeChange('day')}
-            className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${
-              viewMode === 'day'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Day
-          </button>
-        </div>
+        <ViewModeToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
 
-        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-[#6b6b6b] cursor-pointer">
           <input
             type="checkbox"
             checked={hideCompleted}
             onChange={(e) => onHideCompletedChange(e.target.checked)}
-            className="w-4 h-4 text-[#3E7BFA] border-gray-300 rounded focus:ring-[#3E7BFA]"
+            className="neu-checkbox w-5 h-5"
           />
           <span>Hide completed</span>
         </label>
@@ -105,3 +62,116 @@ export default function CalendarToolbar({
   );
 }
 
+// Toolbar button with neumorphic styling
+interface ToolbarButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+}
+
+function ToolbarButton({ children, onClick }: ToolbarButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      className="px-4 py-2 text-sm font-medium text-[#6b6b6b] bg-[#e0e0e0] rounded-xl transition-all duration-200"
+      style={{
+        boxShadow: isHovered
+          ? '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)'
+          : '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)',
+        color: isHovered ? '#4a4a4a' : '#6b6b6b',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Navigation button
+interface NavButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  'aria-label': string;
+}
+
+function NavButton({ children, onClick, 'aria-label': ariaLabel }: NavButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      className="p-2 rounded-xl text-[#6b6b6b] bg-[#e0e0e0] transition-all duration-200"
+      style={{
+        boxShadow: isHovered
+          ? '-1px -1px 2px rgba(255,255,255,0.8), 1px 1px 2px rgba(190,190,190,0.8)'
+          : '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)',
+        color: isHovered ? '#4a4a4a' : '#6b6b6b',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </button>
+  );
+}
+
+// View mode toggle with neumorphic styling
+interface ViewModeToggleProps {
+  viewMode: 'month' | 'week' | 'day';
+  onViewModeChange: (mode: 'month' | 'week' | 'day') => void;
+}
+
+function ViewModeToggle({ viewMode, onViewModeChange }: ViewModeToggleProps) {
+  return (
+    <div 
+      className="flex items-center gap-1 bg-[#e0e0e0] rounded-xl p-1"
+      style={{ boxShadow: 'inset -2px -2px 4px rgba(255,255,255,0.8), inset 2px 2px 4px rgba(190,190,190,0.8)' }}
+    >
+      {(['month', 'week', 'day'] as const).map((mode) => (
+        <ViewModeButton
+          key={mode}
+          mode={mode}
+          isActive={viewMode === mode}
+          onClick={() => onViewModeChange(mode)}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface ViewModeButtonProps {
+  mode: 'month' | 'week' | 'day';
+  isActive: boolean;
+  onClick: () => void;
+}
+
+function ViewModeButton({ mode, isActive, onClick }: ViewModeButtonProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const getShadow = () => {
+    if (isActive) {
+      return '-2px -2px 4px rgba(255,255,255,0.8), 2px 2px 4px rgba(190,190,190,0.8)';
+    }
+    if (isHovered) {
+      return '-1px -1px 2px rgba(255,255,255,0.6), 1px 1px 2px rgba(190,190,190,0.6)';
+    }
+    return 'none';
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+        isActive ? 'text-[#6b8cce] bg-[#e0e0e0]' : 'text-[#6b6b6b]'
+      }`}
+      style={{ boxShadow: getShadow() }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+    </button>
+  );
+}

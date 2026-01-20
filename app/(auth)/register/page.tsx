@@ -45,17 +45,23 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[#e0e0e0] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tick Always</h1>
-          <p className="mt-2 text-gray-600">Create your account</p>
+          <h1 className="text-3xl font-bold text-[#4a4a4a]">Tick Always</h1>
+          <p className="mt-2 text-[#6b6b6b]">Create your account</p>
         </div>
 
         <Card>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+              <div className="
+                bg-[#e0e0e0] rounded-xl px-4 py-3 text-[#ce6b6b] text-sm
+                shadow-[
+                  inset_-2px_-2px_4px_rgba(255,255,255,0.8),
+                  inset_2px_2px_4px_rgba(190,190,190,0.8)
+                ]
+              ">
                 {error}
               </div>
             )}
@@ -97,9 +103,9 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-[#6b6b6b]">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-500">
+            <Link href="/login" className="text-[#6b8cce] hover:text-[#5a7ab8] font-medium">
               Sign in
             </Link>
           </p>
@@ -108,4 +114,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
