@@ -44,21 +44,37 @@ export function verifyToken(token: string): JWTPayload | null {
 /**
  * Get user from request (from JWT token)
  */
-export async function getCurrentUser(request: NextRequest): Promise<JWTPayload | null> {
-  const authHeader = request.headers.get('authorization');
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+export interface AuthUser {
+  id: string;
+  userId: string;
+  email: string;
+}
+
+/**
+ * Get user from request (from JWT token)
+ */
+export async function getCurrentUser(request: NextRequest): Promise<AuthUser | null> {
+  const token = request.cookies.get('accessToken')?.value;
+
+  if (!token) {
     return null;
   }
 
-  const token = authHeader.substring(7);
-  return verifyToken(token);
+  const payload = verifyToken(token);
+  if (payload) {
+    return {
+      id: payload.userId,
+      userId: payload.userId,
+      email: payload.email,
+    };
+  }
+  return null;
 }
 
 /**
  * Get user from cookie (alternative method)
  */
-export function getCurrentUserFromCookie(request: NextRequest): JWTPayload | null {
+export function getCurrentUserFromCookie(request: NextRequest): AuthUser | null {
   // Check for accessToken first (used by Google OAuth and login)
   let token = request.cookies.get('accessToken')?.value;
   
@@ -71,13 +87,21 @@ export function getCurrentUserFromCookie(request: NextRequest): JWTPayload | nul
     return null;
   }
 
-  return verifyToken(token);
+  const payload = verifyToken(token);
+  if (payload) {
+    return {
+      id: payload.userId,
+      userId: payload.userId,
+      email: payload.email,
+    };
+  }
+  return null;
 }
 
 /**
  * Authentication middleware for API routes
  */
-export async function requireAuth(request: NextRequest): Promise<JWTPayload> {
+export async function requireAuth(request: NextRequest): Promise<AuthUser> {
   const user = await getCurrentUser(request) || getCurrentUserFromCookie(request);
   
   if (!user) {

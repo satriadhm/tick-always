@@ -37,6 +37,13 @@ const UserSchema = new Schema<IUser>(
       default: 'user',
       enum: ['user', 'admin'],
     },
+    preferences: {
+      notifications: {
+        email: { type: Boolean, default: true },
+        push: { type: Boolean, default: false },
+        marketing: { type: Boolean, default: false },
+      },
+    },
   },
   {
     timestamps: true,

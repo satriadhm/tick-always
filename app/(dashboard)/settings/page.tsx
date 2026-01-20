@@ -10,6 +10,13 @@ interface UserData {
   name: string;
   email: string;
   avatar?: string;
+  preferences?: {
+    notifications: {
+      email: boolean;
+      push: boolean;
+      marketing: boolean;
+    };
+  };
 }
 
 export default function SettingsPage() {
@@ -26,6 +33,29 @@ export default function SettingsPage() {
     push: false,
     marketing: false,
   });
+
+  const handleNotificationChange = async (key: keyof typeof notifications, value: boolean) => {
+    // Optimistic update
+    setNotifications(prev => ({ ...prev, [key]: value }));
+
+    try {
+      const response = await fetch('/api/user/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          notifications: { [key]: value }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update preferences');
+      }
+    } catch (error) {
+      console.error('Error updating preferences:', error);
+      // Revert on error
+      setNotifications(prev => ({ ...prev, [key]: !value }));
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,6 +74,13 @@ export default function SettingsPage() {
 
     fetchUser();
   }, []);
+
+  // Update local state when user data is loaded
+  useEffect(() => {
+    if (user?.preferences?.notifications) {
+      setNotifications(user.preferences.notifications);
+    }
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -141,7 +178,7 @@ export default function SettingsPage() {
             </div>
             <Switch 
               checked={notifications.email} 
-              onChange={(checked) => setNotifications({ ...notifications, email: checked })} 
+              onChange={(checked) => handleNotificationChange('email', checked)} 
             />
           </div>
 
@@ -154,7 +191,7 @@ export default function SettingsPage() {
             </div>
             <Switch 
               checked={notifications.push} 
-              onChange={(checked) => setNotifications({ ...notifications, push: checked })} 
+              onChange={(checked) => handleNotificationChange('push', checked)} 
             />
           </div>
 
@@ -167,7 +204,7 @@ export default function SettingsPage() {
             </div>
             <Switch 
               checked={notifications.marketing} 
-              onChange={(checked) => setNotifications({ ...notifications, marketing: checked })} 
+              onChange={(checked) => handleNotificationChange('marketing', checked)} 
             />
           </div>
         </Card>

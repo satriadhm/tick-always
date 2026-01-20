@@ -9,6 +9,13 @@ export interface IUser extends Document {
   googleId?: string;
   avatar?: string;
   role?: string;
+  preferences?: {
+    notifications: {
+      email: boolean;
+      push: boolean;
+      marketing: boolean;
+    };
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,6 +86,19 @@ export interface IHabitCompletion extends Document {
   completed: boolean;
   notes?: string;
   createdAt: Date;
+}
+
+// Transaction Types
+export interface ITransaction extends Document {
+  _id: Types.ObjectId;
+  userId: string;
+  type: 'income' | 'expense' | 'investment' | 'trading';
+  amount: number;
+  category: string;
+  date: Date;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // API Response Types

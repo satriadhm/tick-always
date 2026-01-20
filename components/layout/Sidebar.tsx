@@ -39,6 +39,7 @@ export default function Sidebar({ user }: SidebarProps) {
     { name: 'Next 7 Days', href: '/tasks?filter=week', icon: 'week', exact: false },
     { name: 'Calendar', href: '/calendar', icon: 'calendar', exact: true },
     { name: 'Habits', href: '/habits', icon: 'habits', exact: true },
+    { name: 'Money', href: '/money', icon: 'money', exact: true },
   ];
 
   const getIcon = (iconName: string) => {
@@ -66,6 +67,12 @@ export default function Sidebar({ user }: SidebarProps) {
         return (
           <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        );
+      case 'money':
+        return (
+          <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
       default:
@@ -133,10 +140,10 @@ export default function Sidebar({ user }: SidebarProps) {
           ) : (
             <Link href="/tasks" className="flex items-center justify-center w-full hover:opacity-80 transition-opacity">
               <div 
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#e0e0e0]"
+                className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#e0e0e0]"
                 style={{ boxShadow: '-3px -3px 6px rgba(255,255,255,0.9), 3px 3px 6px rgba(190,190,190,0.9)' }}
               >
-                <svg className="w-4 h-4 text-[#6b8cce]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[#6b8cce]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -149,7 +156,7 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* Main Navigation */}
         <nav className="flex-1 min-h-0 overflow-y-auto py-6">
-          <div className="px-4 space-y-2">
+          <div className={`space-y-2 ${isCollapsed ? 'px-2' : 'px-4'}`}>
             {navigationItems.map((item) => {
               const active = isActive(item.href, item.exact);
               return (
@@ -255,7 +262,8 @@ function NavLink({ href, active, icon, label, isCollapsed }: NavLinkProps) {
     <Link
       href={href}
       className={`
-        flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+        flex items-center gap-3 rounded-xl transition-all duration-200
+        ${isCollapsed ? 'justify-center px-2 py-3' : 'px-4 py-3'}
         ${active ? 'text-[#6b8cce] font-medium bg-[#e0e0e0]' : 'text-[#6b6b6b]'}
         ${isHovered && !active ? 'text-[#4a4a4a] bg-[#e0e0e0]' : ''}
       `}

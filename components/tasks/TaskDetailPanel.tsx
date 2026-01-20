@@ -417,6 +417,7 @@ interface PropertyRowProps {
 function PropertyRow({ icon, label, value, onClick, onValueChange, type }: PropertyRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleSave = () => {
     if (onValueChange && editValue !== value) {
@@ -486,8 +487,6 @@ function PropertyRow({ icon, label, value, onClick, onValueChange, type }: Prope
       </div>
     );
   }
-
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
