@@ -6,8 +6,8 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   name: string;
-  avatar?: string;
   googleId?: string;
+  avatar?: string;
   role?: string;
   createdAt: Date;
   updatedAt: Date;

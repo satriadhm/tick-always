@@ -60,31 +60,6 @@
   --animation-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dark {
-  /* Neumorphic Color System - Dark Mode */
-  --bg-base: #2d2d2d;
-  --bg-lighter: #3d3d3d;
-  --bg-darker: #1a1a1a;
-
-  /* Text Colors */
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
-  --text-muted: #6b6b6b;
-
-  /* Accent Colors (slightly brighter/adjusted for dark) */
-  --accent-primary: #8daed8;
-  --accent-success: #88cfa6;
-  --accent-danger: #e68d8d;
-  --accent-warning: #e0c88d;
-
-  /* Neumorphic Shadows - Dark Mode */
-  --shadow-light: #3d3d3d;
-  --shadow-dark: #1a1a1a;
-
-  /* Adjust shadow intensity for dark mode if needed */
-  --shadow-intensity: 0.5;
-}
-
 @theme inline {
   --color-background: var(--bg-base);
   --color-foreground: var(--text-primary);
@@ -145,15 +120,9 @@ h3 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--neu-inset);
-  /* Use a variable or hardcoded color */
+  background: var(--bg-darker);
   border-radius: var(--radius-full);
   box-shadow: var(--neu-subtle);
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
-  /* Lighter than background #2d2d2d */
 }
 
 ::-webkit-scrollbar-thumb:hover {

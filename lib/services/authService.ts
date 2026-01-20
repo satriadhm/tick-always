@@ -9,8 +9,8 @@ interface GoogleLoginResult {
     id: string;
     email: string;
     name: string;
-    role?: string;
     avatar?: string;
+    role?: string;
   };
   error?: string;
   message?: string;
@@ -65,25 +65,22 @@ class AuthService {
         };
       }
 
-
-
       // Find or create user
       let user = await User.findOne({ email: email.toLowerCase() });
 
       if (user) {
-        // Update user with Google ID if not already set
-        let updates = false;
+        // Update user with Google ID and avatar if not already set
+        let hasUpdates = false;
         if (!user.googleId) {
           user.googleId = googleId;
-          updates = true;
+          hasUpdates = true;
         }
-        // Update avatar if available and different (or not set)
-        if (picture && user.avatar !== picture) {
+        if (!user.avatar && picture) {
           user.avatar = picture;
-          updates = true;
+          hasUpdates = true;
         }
         
-        if (updates) {
+        if (hasUpdates) {
           await user.save();
         }
       } else {
@@ -92,8 +89,8 @@ class AuthService {
           email: email.toLowerCase(),
           name: name || email.split('@')[0],
           googleId,
-          role: 'user',
           avatar: picture,
+          role: 'user',
         });
       }
 
@@ -103,8 +100,8 @@ class AuthService {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
-          role: user.role || 'user',
           avatar: user.avatar,
+          role: user.role || 'user',
         },
       };
     } catch (error) {

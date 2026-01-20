@@ -9,19 +9,16 @@ interface CardProps {
 }
 
 export default function Card({ children, className = '', variant = 'raised' }: CardProps) {
-  const getShadow = () => {
-    switch (variant) {
-      case 'raised': return 'var(--neu-raised)';
-      case 'inset': return 'var(--neu-inset)';
-      case 'subtle': return 'var(--neu-subtle)';
-      default: return 'var(--neu-raised)';
-    }
+  const shadows = {
+    raised: '8px 8px 16px #bebebe, -8px -8px 16px #ffffff',
+    inset: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff',
+    subtle: '4px 4px 8px #bebebe, -4px -4px 8px #ffffff',
   };
 
   return (
     <div 
-      className={`rounded-3xl p-8 bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-200 ${className}`}
-      style={{ boxShadow: getShadow() }}
+      className={`rounded-3xl p-8 bg-[#e0e0e0] ${className}`}
+      style={{ boxShadow: shadows[variant] }}
     >
       {children}
     </div>

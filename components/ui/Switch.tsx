@@ -19,22 +19,24 @@ export default function Switch({
 
   // Neumorphic styles
   const switchContainerStyle: React.CSSProperties = {
-    backgroundColor: 'var(--bg-base)',
-    boxShadow: 'var(--neu-inset)',
+    backgroundColor: '#e0e0e0',
+    boxShadow: checked
+      ? 'inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff' // Pressed/Active state
+      : 'inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff', // Always inset for the track
     transition: 'all 0.3s ease',
   };
 
   const toggleStyle: React.CSSProperties = {
-    backgroundColor: checked ? 'var(--accent-primary)' : 'var(--bg-base)',
+    backgroundColor: checked ? '#6b8cce' : '#e0e0e0', // Blue when checked, gray when unchecked
     boxShadow: checked
-      ? 'var(--neu-raised)' // Adjusted
-      : 'var(--neu-raised)',
+      ? '3px 3px 6px #bebebe, -3px -3px 6px #ffffff' // Raised when checked
+      : '3px 3px 6px #bebebe, -3px -3px 6px #ffffff', // Raised when unchecked
     transform: checked ? 'translateX(24px)' : 'translateX(0)',
     transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
   };
 
   const indicatorStyle: React.CSSProperties = {
-    backgroundColor: checked ? '#ffffff' : 'var(--text-muted)',
+    backgroundColor: checked ? '#ffffff' : '#8a8a8a', // White dot when checked, gray when unchecked
   };
 
   return (

@@ -29,14 +29,13 @@ const UserSchema = new Schema<IUser>(
       sparse: true,
       index: true,
     },
+    avatar: {
+      type: String,
+    },
     role: {
       type: String,
       default: 'user',
       enum: ['user', 'admin'],
-    },
-    avatar: {
-      type: String,
-      required: false,
     },
   },
   {

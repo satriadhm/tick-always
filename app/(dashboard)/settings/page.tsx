@@ -1,30 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Switch from '@/components/ui/Switch';
 
-interface UserProfile {
+interface UserData {
   name: string;
   email: string;
   avatar?: string;
 }
 
 export default function SettingsPage() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  
-  // Real State
-  const [profile, setProfile] = useState<UserProfile>({
-    name: '',
-    email: '',
-  });
+  const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock Preferences
+  // Mock Preferences State
   const [preferences, setPreferences] = useState({
     startOfWeek: 'monday',
   });
@@ -36,108 +28,103 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    setMounted(true);
-    fetchUserProfile();
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.data.user);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  const fetchUserProfile = async () => {
-    try {
-      const response = await fetch('/api/auth/me');
-      const data = await response.json();
-      if (data.success) {
-        setProfile(data.data.user);
-      }
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const isDark = mounted && (theme === 'dark' || resolvedTheme === 'dark');
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#6b8cce] border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto p-6 space-y-8 pb-20">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-[#4a4a4a] dark:text-[#e0e0e0] mb-2 transition-colors">Settings</h1>
-        <p className="text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Manage your account preferences and app settings</p>
+        <h1 className="text-3xl font-bold text-[#4a4a4a] mb-2">Settings</h1>
+        <p className="text-[#6b6b6b]">Manage your account preferences and app settings</p>
       </header>
 
       {/* Profile Settings */}
       <section>
-        <h2 className="text-xl font-semibold text-[#4a4a4a] dark:text-[#e0e0e0] mb-4 transition-colors">Profile</h2>
+        <h2 className="text-xl font-semibold text-[#4a4a4a] mb-4">Profile</h2>
         <Card className="space-y-6">
           <div className="flex items-center gap-6">
-            {profile.avatar ? (
-              <img 
-                src={profile.avatar} 
-                alt={profile.name} 
-                className="w-24 h-24 rounded-full shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] dark:shadow-[inset_4px_4px_8px_#1a1a1a,inset_-4px_-4px_8px_#3d3d3d] object-cover"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-[#e0e0e0] dark:bg-[#2d2d2d] flex items-center justify-center text-3xl font-bold text-[#6b6b6b] dark:text-[#a0a0a0] shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] dark:shadow-[inset_4px_4px_8px_#1a1a1a,inset_-4px_-4px_8px_#3d3d3d] transition-all">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
-              </div>
-            )}
+            <div 
+              className="w-24 h-24 rounded-full bg-[#e0e0e0] flex items-center justify-center text-3xl font-bold text-[#6b6b6b] overflow-hidden"
+              style={{ boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff' }}
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.charAt(0).toUpperCase() || 'U'
+              )}
+            </div>
             <div className="space-y-2">
-              <Button variant="secondary" size="sm" disabled>Google Account Managed</Button>
-              <p className="text-xs text-[#8a8a8a] dark:text-[#6b6b6b] transition-colors">
-                Profile picture and info managed via Google
-              </p>
+              <h3 className="font-medium text-lg text-[#4a4a4a]">{user?.name}</h3>
+              <p className="text-sm text-[#8a8a8a]">{user?.email}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input 
               label="Display Name" 
-              value={profile.name} 
+              value={user?.name || ''} 
               disabled
               readOnly
             />
             <Input 
               label="Email Address" 
-              value={profile.email} 
+              value={user?.email || ''} 
               disabled
               readOnly
             />
+          </div>
+          
+          <div className="flex justify-end">
+             {/* Edit functionality to be implemented */}
+             <Button disabled>Save Changes</Button>
           </div>
         </Card>
       </section>
 
       {/* App Preferences */}
       <section>
-        <h2 className="text-xl font-semibold text-[#4a4a4a] dark:text-[#e0e0e0] mb-4 transition-colors">Preferences</h2>
+        <h2 className="text-xl font-semibold text-[#4a4a4a] mb-4">Preferences</h2>
         <Card className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-[#4a4a4a] dark:text-[#e0e0e0] transition-colors">Dark Mode</h3>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Switch between light and dark themes</p>
-            </div>
-            {mounted && (
-              <Switch 
-                checked={isDark || false}
-                onChange={(checked) => setTheme(checked ? 'dark' : 'light')} 
-              />
-            )}
-          </div>
-
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#bebebe] dark:via-[#3d3d3d] to-transparent opacity-50 my-4" />
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-medium text-[#4a4a4a] dark:text-[#e0e0e0] transition-colors">Start of Week</h3>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Choose which day your week starts on</p>
+              <h3 className="text-base font-medium text-[#4a4a4a]">Start of Week</h3>
+              <p className="text-sm text-[#6b6b6b]">Choose which day your week starts on</p>
             </div>
             <div className="relative">
               <select 
                 value={preferences.startOfWeek}
                 onChange={(e) => setPreferences({ ...preferences, startOfWeek: e.target.value })}
-                className="appearance-none bg-[var(--bg-base)] text-[var(--text-primary)] px-4 py-2 pr-8 rounded-xl shadow-[var(--neu-inset)] outline-none cursor-pointer transition-all focus:ring-2 focus:ring-[var(--accent-primary)]/50"
+                className="appearance-none bg-[#e0e0e0] px-4 py-2 pr-8 rounded-xl shadow-[inset_3px_3px_6px_#bebebe,inset_-3px_-3px_6px_#ffffff] text-[#4a4a4a] outline-none cursor-pointer"
               >
                 <option value="sunday">Sunday</option>
                 <option value="monday">Monday</option>
                 <option value="saturday">Saturday</option>
               </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#6b6b6b]">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
             </div>
           </div>
         </Card>
@@ -145,12 +132,12 @@ export default function SettingsPage() {
 
       {/* Notification Settings */}
       <section>
-        <h2 className="text-xl font-semibold text-[#4a4a4a] dark:text-[#e0e0e0] mb-4 transition-colors">Notifications</h2>
+        <h2 className="text-xl font-semibold text-[#4a4a4a] mb-4">Notifications</h2>
         <Card className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-[#4a4a4a] dark:text-[#e0e0e0] transition-colors">Email Notifications</h3>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Receive updates about your tasks via email</p>
+              <h3 className="text-base font-medium text-[#4a4a4a]">Email Notifications</h3>
+              <p className="text-sm text-[#6b6b6b]">Receive updates about your tasks via email</p>
             </div>
             <Switch 
               checked={notifications.email} 
@@ -158,16 +145,29 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#bebebe] dark:via-[#3d3d3d] to-transparent opacity-50 my-4" />
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#bebebe] to-transparent opacity-50 my-4" />
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-[#4a4a4a] dark:text-[#e0e0e0] transition-colors">Push Notifications</h3>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Receive push notifications on your device</p>
+              <h3 className="text-base font-medium text-[#4a4a4a]">Push Notifications</h3>
+              <p className="text-sm text-[#6b6b6b]">Receive push notifications on your device</p>
             </div>
             <Switch 
               checked={notifications.push} 
               onChange={(checked) => setNotifications({ ...notifications, push: checked })} 
+            />
+          </div>
+
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[#bebebe] to-transparent opacity-50 my-4" />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-medium text-[#4a4a4a]">Marketing Emails</h3>
+              <p className="text-sm text-[#6b6b6b]">Receive news and tips about Tick Always</p>
+            </div>
+            <Switch 
+              checked={notifications.marketing} 
+              onChange={(checked) => setNotifications({ ...notifications, marketing: checked })} 
             />
           </div>
         </Card>
@@ -179,8 +179,8 @@ export default function SettingsPage() {
         <Card className="border border-[#ce6b6b]/20">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-medium text-[#4a4a4a] dark:text-[#e0e0e0] transition-colors">Delete Account</h3>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] transition-colors">Permanently delete your account and all data</p>
+              <h3 className="text-base font-medium text-[#4a4a4a]">Delete Account</h3>
+              <p className="text-sm text-[#6b6b6b]">Permanently delete your account and all data</p>
             </div>
             <Button variant="danger">Delete Account</Button>
           </div>
