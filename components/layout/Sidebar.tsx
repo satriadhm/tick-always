@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,25 @@ export default function Sidebar({ user }: SidebarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // If sidebar is expanded and click is outside sidebar, collapse it
+      if (
+        !isCollapsed &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsCollapsed(true);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCollapsed]);
 
   const navigationItems = [
     { name: 'Today', href: '/tasks?filter=today', icon: 'today', exact: false },
@@ -86,8 +105,9 @@ export default function Sidebar({ user }: SidebarProps) {
 
   return (
     <aside
+      ref={sidebarRef}
       className={`
-        bg-[#e0e0e0] h-screen fixed left-0 top-0 z-40 
+        bg-[#e0e0e0] h-full relative z-10 flex-shrink-0
         transition-all duration-200
         ${isCollapsed ? 'w-16' : 'w-[260px]'}
       `}

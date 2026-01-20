@@ -64,7 +64,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-[#e0e0e0] overflow-hidden">
       <Sidebar user={user} />
-      <main className="flex-1 ml-[260px] overflow-y-auto bg-[#e0e0e0]">
+      <main className="flex-1 overflow-y-auto bg-[#e0e0e0]">
         <div className="min-h-full">{children}</div>
       </main>
     </div>
