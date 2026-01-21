@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import { Task } from '@/lib/models/Task';
 import { requireAuth } from '@/lib/auth';
-import { taskUpdateSchema } from '@/lib/utils/validation';
 import { ApiResponse } from '@/types';
 import { toUTC } from '@/lib/utils/dateHelpers';
+import { z } from 'zod';
+
+// Schema for updating a task - all fields are optional
+const taskUpdateSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200).optional(),
+  description: z.string().max(2000).optional().nullable(),
+  dueDate: z.string().optional().nullable(),
+  priority: z.enum(['none', 'low', 'medium', 'high']).optional(),
+  tags: z.array(z.string()).optional(),
+  isRecurring: z.boolean().optional(),
+  recurrenceRule: z.object({
+    frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
+    interval: z.number().optional(),
+    endDate: z.string().optional(),
+  }).optional().nullable(),
+});
 
 // GET /api/tasks/[id] - Get a specific task
 export async function GET(
