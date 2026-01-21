@@ -88,12 +88,17 @@ export default function MoneyPage() {
     );
   }
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'income', label: 'Income', icon: '💰' },
-    { id: 'expense', label: 'Expense', icon: '💸' },
-    { id: 'investment', label: 'Invest', icon: '📈' },
-    { id: 'trading', label: 'Trading', icon: '📉' },
+  // Dynamic tabs derived from stats data
+  const categoryTypes = Object.keys(stats).filter(
+    (key) => key !== 'balance' && typeof stats[key as keyof typeof stats] === 'object'
+  ) as ('income' | 'expense' | 'investment' | 'trading')[];
+
+  const tabs: { id: string; label: string }[] = [
+    { id: 'overview', label: 'Overview' },
+    ...categoryTypes.map((type) => ({
+      id: type,
+      label: type.charAt(0).toUpperCase() + type.slice(1),
+    })),
   ];
 
   return (
@@ -101,7 +106,7 @@ export default function MoneyPage() {
       <header className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-3xl font-bold text-[#4a4a4a] mb-2">Money Tracker</h1>
-          <p className="text-[#6b6b6b]">Financial overview & transactions</p>
+          <p className="text-[#6b6b6b]">Financial overview &amp; transactions</p>
         </div>
       </header>
 
@@ -111,14 +116,13 @@ export default function MoneyPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as 'overview' | 'income' | 'expense' | 'investment' | 'trading')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
               activeTab === tab.id
                 ? 'bg-[#e0e0e0] text-[#6b8cce] shadow-[-3px_-3px_6px_rgba(255,255,255,0.8),3px_3px_6px_rgba(190,190,190,0.8)] transform scale-[1.02]'
                 : 'text-[#8a8a8a] hover:text-[#4a4a4a] hover:bg-[#e6e6e6]'
             }`}
           >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
+            {tab.label}
           </button>
         ))}
       </div>

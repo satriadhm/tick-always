@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { toUTC } from '@/lib/utils/dateHelpers';
 import { ApiResponse, ITask } from '@/types';
-import { SortOrder } from 'mongoose';
+
 
 const taskCreateSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -34,7 +34,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const sortBy = searchParams.get('sortBy') || 'dueDate';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
-    const query: any = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: Record<string, any> = {
       userId: user.userId,
       deletedAt: { $exists: false },
     };
@@ -55,14 +56,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     }
 
     if (dueDateFrom || dueDateTo) {
-      const dateFilter: any = {};
+      const dateFilter: { $gte?: Date; $lte?: Date } = {};
       if (dueDateFrom) dateFilter.$gte = new Date(dueDateFrom);
       if (dueDateTo) dateFilter.$lte = new Date(dueDateTo);
       query.dueDate = dateFilter;
     }
     
     // Sort
-    const sort: Record<string, SortOrder> = {};
+    const sort: Record<string, 1 | -1> = {};
     if (sortBy === 'dueDate') {
        sort['dueDate'] = sortOrder === 'asc' ? 1 : -1;
     } else if (sortBy === 'createdAt') {
