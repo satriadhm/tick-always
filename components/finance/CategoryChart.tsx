@@ -17,7 +17,9 @@ interface CategoryChartProps {
 const COLORS = ['#6b8cce', '#ce6b6b', '#8dc9b6', '#d6b656', '#9c7ec7', '#8a8a8a'];
 
 export default function CategoryChart({ data, title = "Category Distribution" }: CategoryChartProps) {
-  if (!data || data.length === 0) {
+  const chartData = data?.filter(item => item.total > 0) || [];
+
+  if (!chartData || chartData.length === 0) {
     return (
       <Card className="h-[300px] flex items-center justify-center text-[#8a8a8a]">
         No data available
@@ -32,7 +34,7 @@ export default function CategoryChart({ data, title = "Category Distribution" }:
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -42,7 +44,7 @@ export default function CategoryChart({ data, title = "Category Distribution" }:
               dataKey="total"
               paddingAngle={5}
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#e0e0e0" strokeWidth={2} />
               ))}
             </Pie>

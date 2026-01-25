@@ -170,6 +170,7 @@ export default function MoneyPage() {
               totalIncome={stats.income.total}
               totalExpense={stats.expense.total}
               totalInvestment={stats.investment.total}
+              totalTrading={stats.trading.total}
               balance={stats.balance}
             />
 

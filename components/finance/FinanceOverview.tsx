@@ -4,12 +4,13 @@ interface FinanceOverviewProps {
   totalIncome: number;
   totalExpense: number;
   totalInvestment: number;
+  totalTrading: number;
   balance: number;
 }
 
-export default function FinanceOverview({ totalIncome, totalExpense, totalInvestment, balance }: FinanceOverviewProps) {
+export default function FinanceOverview({ totalIncome, totalExpense, totalInvestment, totalTrading, balance }: FinanceOverviewProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       <Card className="space-y-2">
         <p className="text-sm text-[#8a8a8a] font-medium uppercase tracking-wide">Income</p>
         <p className="text-2xl font-bold text-[#6b8cce]">+Rp{totalIncome.toLocaleString('id-ID')}</p>
@@ -22,7 +23,16 @@ export default function FinanceOverview({ totalIncome, totalExpense, totalInvest
 
       <Card className="space-y-2">
         <p className="text-sm text-[#8a8a8a] font-medium uppercase tracking-wide">Investment</p>
-        <p className="text-2xl font-bold text-[#8dc9b6]">-Rp{totalInvestment.toLocaleString('id-ID')}</p>
+        <p className="text-2xl font-bold text-[#8dc9b6]">
+          {totalInvestment > 0 ? '-' : '+'}Rp{Math.abs(totalInvestment).toLocaleString('id-ID')}
+        </p>
+      </Card>
+
+      <Card className="space-y-2">
+        <p className="text-sm text-[#8a8a8a] font-medium uppercase tracking-wide">Trading</p>
+        <p className="text-2xl font-bold text-[#d6b656]">
+          {totalTrading > 0 ? '-' : '+'}Rp{Math.abs(totalTrading).toLocaleString('id-ID')}
+        </p>
       </Card>
       
       <Card className="space-y-2" >

@@ -170,8 +170,17 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
                   <td className="p-4 text-[#6b6b6b] text-sm text-center">
                     {t.frequency || 1}
                   </td>
-                  <td className={`p-4 text-right font-bold ${colorClass}`}>
-                    {type === 'income' ? '+' : '-'}Rp{t.amount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <td className={`p-4 text-right font-bold ${
+                    type === 'income' ? 'text-[#6b8cce]' :
+                    type === 'expense' ? 'text-[#ce6b6b]' :
+                    (type === 'investment' || type === 'trading') ? (
+                      t.amount < 0 ? 'text-[#6b8cce]' : 'text-[#ce6b6b]'
+                    ) : 'text-[#4a4a4a]'
+                  }`}>
+                    {type === 'income' ? '+' : 
+                     type === 'expense' ? '-' :
+                     (type === 'investment' || type === 'trading') ? (t.amount < 0 ? '+' : '-') : ''
+                    }Rp{Math.abs(t.amount).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="p-4 text-center opacity-0 group-hover:opacity-100 transition-opacity flex justify-center gap-2">
                     <button 

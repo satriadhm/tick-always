@@ -15,6 +15,7 @@ interface TransactionModalProps {
 
 export default function TransactionModal({ transaction, onClose, onSave }: TransactionModalProps) {
   const [type, setType] = useState<'income' | 'expense' | 'investment' | 'trading'>('expense');
+  const [flow, setFlow] = useState<'in' | 'out'>('out'); // 'in' = inflow (sell/income), 'out' = outflow (buy/expense)
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('1');
   const [category, setCategory] = useState('');
@@ -25,9 +26,25 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
   useEffect(() => {
     if (transaction) {
       setType(transaction.type);
-      // Format initial amount: Total Amount / Frequency (default 1)
+      
       const freq = transaction.frequency || 1;
-      const unitAmount = transaction.amount / freq;
+      const totalAmount = transaction.amount;
+      
+      // Determine flow based on amount sign and type
+      // Income is always +, Expense always + (in DB, handled by logic usually, but here we treat input as abs)
+      // Investment/Trading: + is Outflow (Buy), - is Inflow (Sell)
+      if (transaction.type === 'investment' || transaction.type === 'trading') {
+        if (totalAmount < 0) {
+          setFlow('in');
+        } else {
+          setFlow('out');
+        }
+      } else {
+        // For income/expense, flow is implicit but let's set defaults
+        setFlow(transaction.type === 'income' ? 'in' : 'out');
+      }
+
+      const unitAmount = Math.abs(totalAmount) / freq;
       setAmount(formatIDR(unitAmount));
       setFrequency(freq.toString());
       setCategory(transaction.category);
@@ -36,6 +53,7 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
     } else {
       // Defaults for new transaction
       setType('expense');
+      setFlow('out');
       setAmount('');
       setFrequency('1');
       setCategory('');
@@ -54,7 +72,6 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Remove non-numeric chars except for the prefix logic to keep it clean
     const rawValue = value.replace(/[^0-9]/g, '');
     
     if (!rawValue) {
@@ -70,13 +87,31 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
     e.preventDefault();
     setIsSaving(true);
     try {
-      // Parse amount string back to number
       const cleanAmount = parseFloat(amount.replace(/[^0-9]/g, ''));
       const freq = parseInt(frequency) || 1;
       
+      let finalAmount = cleanAmount * freq;
+
+      // Business Logic for Sign:
+      // Income: Always Positive
+      // Expense: Always Positive (Logic elsewhere subtracts it, or we store negative? 
+      // Based on current stats route: `totalAmount: { $sum: '$amount' }` and 
+      // balance = income - (expense + investment + trading)
+      // This implies Expense, Investment, Trading should be POSITIVE when they are outflows.
+      
+      // If Investment/Trading is 'in' (Sell), it should be NEGATIVE so that:
+      // minus (negative) becomes plus.
+      // e.g. Balance = ... - (-100) = ... + 100.
+      
+      if (type === 'investment' || type === 'trading') {
+        if (flow === 'in') {
+          finalAmount = -finalAmount;
+        }
+      }
+
       await onSave({
         type,
-        amount: cleanAmount * freq, // Store total amount
+        amount: finalAmount,
         frequency: freq,
         category,
         date: new Date(date),
@@ -88,6 +123,14 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Reset flow when type changes
+  const handleTypeChange = (newType: 'income' | 'expense' | 'investment' | 'trading') => {
+    setType(newType);
+    if (newType === 'income') setFlow('in');
+    else if (newType === 'expense') setFlow('out');
+    else setFlow('out'); // Default to buy for invest/trading
   };
 
   return (
@@ -108,7 +151,7 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
                   ? 'bg-[#e0e0e0] text-[#6b8cce] shadow-[-2px_-2px_4px_rgba(255,255,255,0.8),2px_2px_4px_rgba(190,190,190,0.8)]' 
                   : 'text-[#8a8a8a] bg-transparent'
               }`}
-              onClick={() => setType('income')}
+              onClick={() => handleTypeChange('income')}
             >
               Income
             </button>
@@ -119,7 +162,7 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
                   ? 'bg-[#e0e0e0] text-[#ce6b6b] shadow-[-2px_-2px_4px_rgba(255,255,255,0.8),2px_2px_4px_rgba(190,190,190,0.8)]' 
                   : 'text-[#8a8a8a] bg-transparent'
               }`}
-              onClick={() => setType('expense')}
+              onClick={() => handleTypeChange('expense')}
             >
               Expense
             </button>
@@ -130,7 +173,7 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
                   ? 'bg-[#e0e0e0] text-[#8dc9b6] shadow-[-2px_-2px_4px_rgba(255,255,255,0.8),2px_2px_4px_rgba(190,190,190,0.8)]' 
                   : 'text-[#8a8a8a] bg-transparent'
               }`}
-              onClick={() => setType('investment')}
+              onClick={() => handleTypeChange('investment')}
             >
               Invest
             </button>
@@ -141,11 +184,42 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
                   ? 'bg-[#e0e0e0] text-[#d6b656] shadow-[-2px_-2px_4px_rgba(255,255,255,0.8),2px_2px_4px_rgba(190,190,190,0.8)]' 
                   : 'text-[#8a8a8a] bg-transparent'
               }`}
-              onClick={() => setType('trading')}
+              onClick={() => handleTypeChange('trading')}
             >
               Trading
             </button>
           </div>
+
+          {/* Flow Toggle for Investment/Trading */}
+          {(type === 'investment' || type === 'trading') && (
+             <div className="flex gap-4 items-center justify-center p-2 bg-[#f0f0f0] rounded-xl">
+               <span className="text-xs font-bold text-[#6b6b6b] uppercase">Action:</span>
+               <div className="flex gap-2">
+                 <button
+                   type="button"
+                   onClick={() => setFlow('out')}
+                   className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${
+                     flow === 'out'
+                       ? 'bg-[#ce6b6b] text-white shadow-md'
+                       : 'bg-[#e0e0e0] text-[#8a8a8a]'
+                   }`}
+                 >
+                   BUY (Out)
+                 </button>
+                 <button
+                   type="button"
+                   onClick={() => setFlow('in')}
+                   className={`px-4 py-1 rounded-lg text-xs font-bold transition-all ${
+                     flow === 'in'
+                       ? 'bg-[#6b8cce] text-white shadow-md'
+                       : 'bg-[#e0e0e0] text-[#8a8a8a]'
+                   }`}
+                 >
+                   SELL (In)
+                 </button>
+               </div>
+             </div>
+          )}
 
           <div className="flex gap-4">
              <div className="flex-1">
@@ -173,7 +247,7 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
 
           <Input 
             label="Category" 
-            placeholder="e.g. Food, Salary, Rent"
+            placeholder="e.g. Stock, Crypto, Gold"
             value={category} 
             onChange={(e) => setCategory(e.target.value)}
             required
