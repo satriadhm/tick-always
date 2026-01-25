@@ -33,15 +33,14 @@ export default function TaskList({ initialFilter, dateFilter: dateFilterProp }: 
 
   // Filters
   const [completed, setCompleted] = useState<string | null>(null);
-  const [priority, setPriority] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('dueDate');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [priority] = useState<string | null>(null);
+  const [search] = useState('');
+  const [sortBy] = useState('dueDate');
+  const [sortOrder] = useState<'asc' | 'desc'>('asc');
   const [dateFilter, setDateFilter] = useState<{ from?: string; to?: string } | null>(null);
 
   // Pagination
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   // Get page title based on filter
   const getPageTitle = () => {
@@ -109,7 +108,6 @@ export default function TaskList({ initialFilter, dateFilter: dateFilterProp }: 
 
       if (data.success) {
         setTasks(data.data.tasks);
-        setTotalPages(data.data.pagination.totalPages);
       } else {
         setError(data.error || 'Failed to fetch tasks');
       }

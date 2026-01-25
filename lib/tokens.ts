@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { IUser } from '@/types';
 import connectDB from '@/lib/mongodb';
 import { RefreshToken } from '@/lib/models/RefreshToken';
 

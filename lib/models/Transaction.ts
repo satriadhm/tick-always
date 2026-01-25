@@ -29,6 +29,10 @@ const TransactionSchema = new Schema<ITransaction>(
     description: {
       type: String,
     },
+    frequency: {
+      type: Number,
+      default: 1,
+    },
   },
   {
     timestamps: true,
@@ -36,4 +40,8 @@ const TransactionSchema = new Schema<ITransaction>(
 );
 
 // Prevent re-compilation during development
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { mongooseEncryption } = require('@/lib/plugins/mongooseEncryption');
+TransactionSchema.plugin(mongooseEncryption, { fields: ['description'] });
+
 export const Transaction = mongoose.models.Transaction || mongoose.model<ITransaction>('Transaction', TransactionSchema);

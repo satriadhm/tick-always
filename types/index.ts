@@ -97,6 +97,7 @@ export interface ITransaction extends Document {
   category: string;
   date: Date;
   description?: string;
+  frequency?: number;
   createdAt: Date;
   updatedAt: Date;
 }

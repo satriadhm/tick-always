@@ -4,7 +4,7 @@ import { Task } from '@/lib/models/Task';
 import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { toUTC } from '@/lib/utils/dateHelpers';
-import { ApiResponse, ITask } from '@/types';
+import { ApiResponse } from '@/types';
 
 
 const taskCreateSchema = z.object({

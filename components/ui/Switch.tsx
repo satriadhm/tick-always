@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface SwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
@@ -15,8 +13,6 @@ export default function Switch({
   disabled = false,
   className = '',
 }: SwitchProps) {
-  const [isPressed, setIsPressed] = useState(false);
-
   // Neumorphic styles
   const switchContainerStyle: React.CSSProperties = {
     backgroundColor: '#e0e0e0',
@@ -46,9 +42,6 @@ export default function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      onMouseDown={() => !disabled && setIsPressed(true)}
-      onMouseUp={() => !disabled && setIsPressed(false)}
-      onMouseLeave={() => !disabled && setIsPressed(false)}
       className={`
         relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
         transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 

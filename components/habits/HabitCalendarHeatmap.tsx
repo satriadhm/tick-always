@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { format, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, getDay } from 'date-fns';
+import { useState } from 'react';
+import { format, subDays, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from 'date-fns';
 
 interface HabitCalendarHeatmapProps {
   habitId: string;

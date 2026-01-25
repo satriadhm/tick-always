@@ -44,7 +44,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
             <div className="flex items-center gap-4">
               <span className={`font-bold ${t.type === 'income' ? 'text-[#6b8cce]' : 'text-[#ce6b6b]'}`}>
-                {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
+                {t.type === 'income' ? '+' : '-'}Rp{t.amount.toLocaleString('id-ID')}
               </span>
               
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

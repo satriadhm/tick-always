@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import HabitCalendarHeatmap from './HabitCalendarHeatmap';
 
 interface HabitDetailPanelProps {
@@ -41,11 +39,7 @@ export default function HabitDetailPanel({
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
 
-  useEffect(() => {
-    fetchHabitData();
-  }, [habitId]);
-
-  const fetchHabitData = async () => {
+  const fetchHabitData = useCallback(async () => {
     setIsLoading(true);
     try {
       // Fetch habit and stats
@@ -72,7 +66,11 @@ export default function HabitDetailPanel({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [habitId]);
+
+  useEffect(() => {
+    fetchHabitData();
+  }, [fetchHabitData]);
 
   const handleSaveEdit = async () => {
     if (!editName.trim()) return;

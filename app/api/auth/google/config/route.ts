@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const hasClientId = !!process.env.GOOGLE_CLIENT_ID;
     const hasClientSecret = !!process.env.GOOGLE_CLIENT_SECRET;
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       clientId: hasClientId ? 'Set' : 'Missing',
       clientSecret: hasClientSecret ? 'Set' : 'Missing',
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         error: 'Failed to check configuration',

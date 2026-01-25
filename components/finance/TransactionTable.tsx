@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ITransaction } from '@/types';
+import { TRANSACTION_CATEGORIES } from '@/lib/constants/categories';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
@@ -19,6 +20,7 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [frequency, setFrequency] = useState('1');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,15 +29,20 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
 
     setIsSubmitting(true);
     try {
+      const unitAmount = parseFloat(amount);
+      const freq = parseInt(frequency) || 1;
+
       await onAdd({
         type,
         date: new Date(date),
         category,
         description,
-        amount: parseFloat(amount),
+        amount: unitAmount * freq,
+        frequency: freq,
       });
       // Reset form
       setAmount('');
+      setFrequency('1');
       setCategory('');
       setDescription('');
       setDate(new Date().toISOString().split('T')[0]);
@@ -67,6 +74,7 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
               <th className="p-4 font-semibold text-[#4a4a4a] w-[150px]">Date</th>
               <th className="p-4 font-semibold text-[#4a4a4a] w-[200px]">Category</th>
               <th className="p-4 font-semibold text-[#4a4a4a]">Description</th>
+              <th className="p-4 font-semibold text-[#4a4a4a] text-center w-[80px]">Freq</th>
               <th className="p-4 font-semibold text-[#4a4a4a] text-right w-[150px]">Amount</th>
               <th className="p-4 font-semibold text-[#4a4a4a] w-[100px] text-center">Action</th>
             </tr>
@@ -94,10 +102,9 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
                   required
                 />
                 <datalist id={`${type}-categories`}>
-                  {[
-                    'Food', 'Transport', 'Housing', 'Utilities', 'Health', 
-                    'Entertainment', 'Shopping', 'Salary', 'Investment', 'Trading'
-                  ].map(c => <option key={c} value={c} />)}
+                  {(TRANSACTION_CATEGORIES[type] || []).map((c) => (
+                    <option key={c} value={c} />
+                  ))}
                 </datalist>
               </td>
               <td className="p-2">
@@ -107,6 +114,16 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full bg-[#e0e0e0] p-2 rounded-lg text-sm text-[#4a4a4a] outline-none shadow-[inset_2px_2px_4px_rgba(190,190,190,0.6),inset_-2px_-2px_4px_rgba(255,255,255,0.8)] focus:shadow-[inset_3px_3px_6px_rgba(180,180,180,0.7),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] transition-all"
+                />
+              </td>
+              <td className="p-2">
+                <input
+                  type="number"
+                  min="1"
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="w-full bg-[#e0e0e0] p-2 rounded-lg text-sm text-[#4a4a4a] text-center outline-none shadow-[inset_2px_2px_4px_rgba(190,190,190,0.6),inset_-2px_-2px_4px_rgba(255,255,255,0.8)] focus:shadow-[inset_3px_3px_6px_rgba(180,180,180,0.7),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] transition-all"
+                  required
                 />
               </td>
               <td className="p-2">
@@ -134,7 +151,7 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
             {/* Transaction Rows */}
             {transactions.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-[#8a8a8a]">
+                <td colSpan={6} className="p-8 text-center text-[#8a8a8a]">
                   No {type} transactions found. Add one above!
                 </td>
               </tr>
@@ -150,8 +167,11 @@ export default function TransactionTable({ transactions, onAdd, onDelete, onEdit
                   <td className="p-4 text-[#6b6b6b] text-sm">
                     {t.description || '-'}
                   </td>
+                  <td className="p-4 text-[#6b6b6b] text-sm text-center">
+                    {t.frequency || 1}
+                  </td>
                   <td className={`p-4 text-right font-bold ${colorClass}`}>
-                    {type === 'income' ? '+' : '-'}${t.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {type === 'income' ? '+' : '-'}Rp{t.amount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="p-4 text-center opacity-0 group-hover:opacity-100 transition-opacity flex justify-center gap-2">
                     <button 

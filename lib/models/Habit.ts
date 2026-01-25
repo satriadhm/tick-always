@@ -61,5 +61,10 @@ const HabitSchema = new Schema<IHabit>(
   }
 );
 
+// Apply encryption plugin
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { mongooseEncryption } = require('@/lib/plugins/mongooseEncryption');
+HabitSchema.plugin(mongooseEncryption, { fields: ['name', 'description'] });
+
 export const Habit = mongoose.models.Habit || mongoose.model<IHabit>('Habit', HabitSchema);
 

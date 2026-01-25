@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@/components/ui/Card';
 import CategoryTable from '@/components/finance/CategoryTable';
+import FinanceOverview from '@/components/finance/FinanceOverview';
+import ExpenseChart from '@/components/finance/ExpenseChart';
 import TransactionModal from '@/components/finance/TransactionModal';
 import TransactionTable from '@/components/finance/TransactionTable';
 import { ITransaction } from '@/types';
@@ -127,56 +129,55 @@ export default function MoneyPage() {
         ))}
       </div>
 
-      {/* Summary Card (Balance) - Always Visible */}
-      <Card className="bg-[#e0e0e0] border-l-4 border-[#8dc9b6]">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-xl font-bold text-[#4a4a4a]">Remaining Balance</h2>
-            <p className="text-sm text-[#6b6b6b]">Income - (Expense + Investment + Trading)</p>
-          </div>
-          <p className={`text-3xl font-bold ${stats.balance >= 0 ? 'text-[#8dc9b6]' : 'text-[#ce6b6b]'}`}>
-            Rp {stats.balance.toLocaleString()}
-          </p>
-        </div>
-      </Card>
+
 
       {/* Content Area */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         {activeTab === 'overview' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            {/* Row 1 */}
-            <CategoryTable 
-              title="Expense Categories" 
-              data={stats.expense.categories} 
-              total={stats.expense.total}
-              type="expense"
-              color="#ce6b6b"
-            />
-            
-            <CategoryTable 
-              title="Investment Categories" 
-              data={stats.investment.categories} 
-              total={stats.investment.total}
-              type="investment"
-              color="#8dc9b6"
+          <div className="space-y-6">
+            <FinanceOverview 
+              totalIncome={stats.income.total}
+              totalExpense={stats.expense.total}
+              balance={stats.balance}
             />
 
-            {/* Row 2 */}
-            <CategoryTable 
-              title="Income Categories" 
-              data={stats.income.categories} 
-              total={stats.income.total}
-              type="income"
-              color="#6b8cce"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <ExpenseChart data={stats.expense.categories} />
+              
+              <CategoryTable 
+                title="Expense Categories" 
+                data={stats.expense.categories} 
+                total={stats.expense.total}
+                type="expense"
+                color="#ce6b6b"
+              />
+            </div>
 
-            <CategoryTable 
-              title="Trading Categories" 
-              data={stats.trading.categories} 
-              total={stats.trading.total}
-              type="trading"
-              color="#d6b656"
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <CategoryTable 
+                title="Income Categories" 
+                data={stats.income.categories} 
+                total={stats.income.total}
+                type="income"
+                color="#6b8cce"
+              />
+              
+              <CategoryTable 
+                title="Investment Categories" 
+                data={stats.investment.categories} 
+                total={stats.investment.total}
+                type="investment"
+                color="#8dc9b6"
+              />
+
+              <CategoryTable 
+                title="Trading Categories" 
+                data={stats.trading.categories} 
+                total={stats.trading.total}
+                type="trading"
+                color="#d6b656"
+              />
+            </div>
           </div>
         ) : (
           <TransactionTable 

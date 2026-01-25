@@ -37,6 +37,11 @@ const HabitCompletionSchema = new Schema<IHabitCompletion>(
 HabitCompletionSchema.index({ habitId: 1, date: 1 }, { unique: true });
 HabitCompletionSchema.index({ userId: 1, date: 1 });
 
+// Apply encryption plugin
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { mongooseEncryption } = require('@/lib/plugins/mongooseEncryption');
+HabitCompletionSchema.plugin(mongooseEncryption, { fields: ['notes'] });
+
 export const HabitCompletion =
   mongoose.models.HabitCompletion || mongoose.model<IHabitCompletion>('HabitCompletion', HabitCompletionSchema);
 

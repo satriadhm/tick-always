@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { ITransaction } from '@/types';
+import { TRANSACTION_CATEGORIES } from '@/lib/constants/categories';
 
 interface TransactionModalProps {
   transaction?: ITransaction | null;
@@ -15,6 +16,7 @@ interface TransactionModalProps {
 export default function TransactionModal({ transaction, onClose, onSave }: TransactionModalProps) {
   const [type, setType] = useState<'income' | 'expense' | 'investment' | 'trading'>('expense');
   const [amount, setAmount] = useState('');
+  const [frequency, setFrequency] = useState('1');
   const [category, setCategory] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [description, setDescription] = useState('');
@@ -23,7 +25,11 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
   useEffect(() => {
     if (transaction) {
       setType(transaction.type);
-      setAmount(transaction.amount.toString());
+      // Format initial amount: Total Amount / Frequency (default 1)
+      const freq = transaction.frequency || 1;
+      const unitAmount = transaction.amount / freq;
+      setAmount(formatIDR(unitAmount));
+      setFrequency(freq.toString());
       setCategory(transaction.category);
       setDate(new Date(transaction.date).toISOString().split('T')[0]);
       setDescription(transaction.description || '');
@@ -31,23 +37,51 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
       // Defaults for new transaction
       setType('expense');
       setAmount('');
+      setFrequency('1');
       setCategory('');
       setDate(new Date().toISOString().split('T')[0]);
       setDescription('');
     }
   }, [transaction]);
 
+  const formatIDR = (value: number | string) => {
+    if (!value) return '';
+    const numberString = value.toString().replace(/[^0-9]/g, '');
+    const number = parseFloat(numberString);
+    if (isNaN(number)) return '';
+    return 'Rp ' + number.toLocaleString('id-ID');
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Remove non-numeric chars except for the prefix logic to keep it clean
+    const rawValue = value.replace(/[^0-9]/g, '');
+    
+    if (!rawValue) {
+      setAmount('');
+      return;
+    }
+
+    const numberValue = parseFloat(rawValue);
+    setAmount('Rp ' + numberValue.toLocaleString('id-ID'));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     try {
+      // Parse amount string back to number
+      const cleanAmount = parseFloat(amount.replace(/[^0-9]/g, ''));
+      const freq = parseInt(frequency) || 1;
+      
       await onSave({
         type,
-        amount: parseFloat(amount),
+        amount: cleanAmount * freq, // Store total amount
+        frequency: freq,
         category,
         date: new Date(date),
         description,
-      } as ITransaction); // Cast to help TS unless we define a separate input type
+      } as ITransaction); 
       onClose();
     } catch (error) {
       console.error('Failed to save transaction:', error);
@@ -113,15 +147,29 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
             </button>
           </div>
 
-          <Input 
-            label="Amount" 
-            type="number" 
-            step="0.01"
-            value={amount} 
-            onChange={(e) => setAmount(e.target.value)}
-            required
-            autoFocus
-          />
+          <div className="flex gap-4">
+             <div className="flex-1">
+               <Input 
+                 label="Amount (per item)" 
+                 type="text" 
+                 placeholder="Rp 0"
+                 value={amount} 
+                 onChange={handleAmountChange}
+                 required
+                 autoFocus
+               />
+             </div>
+             <div className="w-[100px]">
+               <Input 
+                 label="Freq" 
+                 type="number" 
+                 min="1"
+                 value={frequency} 
+                 onChange={(e) => setFrequency(e.target.value)}
+                 required
+               />
+             </div>
+          </div>
 
           <Input 
             label="Category" 
@@ -132,11 +180,9 @@ export default function TransactionModal({ transaction, onClose, onSave }: Trans
             list="categories"
           />
           <datalist id="categories">
-            <option value="Food" />
-            <option value="Transport" />
-            <option value="Salary" />
-            <option value="Rent" />
-            <option value="Utilities" />
+            {TRANSACTION_CATEGORIES[type]?.map((cat) => (
+              <option key={cat} value={cat} />
+            ))}
           </datalist>
 
           <Input 

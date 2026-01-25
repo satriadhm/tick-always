@@ -92,5 +92,10 @@ TaskSchema.index({ userId: 1, tags: 1 });
 // Text index for search
 TaskSchema.index({ userId: 1, title: 'text', description: 'text' });
 
+// Apply encryption plugin
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { mongooseEncryption } = require('@/lib/plugins/mongooseEncryption');
+TaskSchema.plugin(mongooseEncryption, { fields: ['title', 'description'] });
+
 export const Task = mongoose.models.Task || mongoose.model<ITask>('Task', TaskSchema);
 

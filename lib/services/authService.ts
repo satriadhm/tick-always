@@ -1,6 +1,8 @@
 import { OAuth2Client } from 'google-auth-library';
+import mongoose, { HydratedDocument } from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import { User } from '@/lib/models/User';
+import { SimpleCache } from '@/lib/utils/cache';
 import { IUser } from '@/types';
 
 interface GoogleLoginResult {
@@ -18,11 +20,13 @@ interface GoogleLoginResult {
 
 class AuthService {
   private googleClient: OAuth2Client | null = null;
+  private userCache: SimpleCache<HydratedDocument<IUser>>;
 
   constructor() {
     if (process.env.GOOGLE_CLIENT_ID) {
       this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
+    this.userCache = new SimpleCache<HydratedDocument<IUser>>(300); // 5 minutes cache
   }
 
   /**
@@ -65,8 +69,15 @@ class AuthService {
         };
       }
 
-      // Find or create user
-      let user = await User.findOne({ email: email.toLowerCase() });
+      // Check cache first
+      let user = this.userCache.get(email.toLowerCase());
+
+      if (!user) {
+        // Find or create user
+        user = await User.findOne({ email: email.toLowerCase() });
+      } else {
+        console.log('Cache Hit for user:', email);
+      }
 
       if (user) {
         // Update user with Google ID and avatar if not already set
@@ -93,6 +104,18 @@ class AuthService {
           role: 'user',
         });
       }
+
+      // Update cache
+      if (!user) {
+        return {
+          success: false,
+          error: 'USER_CREATION_FAILED',
+          message: 'Failed to create or retrieve user',
+        };
+      }
+
+      // Update cache
+      this.userCache.set(email.toLowerCase(), user);
 
       return {
         success: true,
