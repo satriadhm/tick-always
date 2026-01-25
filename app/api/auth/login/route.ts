@@ -57,7 +57,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     // Set HTTP-only cookie
     response.cookies.set('auth-token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: request.url.startsWith('https'),
       sameSite: 'lax',
       maxAge: 60 * 60 * 24, // 24 hours
     });

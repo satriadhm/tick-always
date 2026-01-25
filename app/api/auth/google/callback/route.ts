@@ -61,9 +61,11 @@ export async function GET(request: NextRequest) {
     const accessToken = signAccessToken(result.user);
     const refreshToken = await signAndStoreRefreshToken(result.user);
 
+    const isSecure = request.url.startsWith('https');
+
     response.cookies.set('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecure,
       sameSite: 'strict',
       path: '/',
       maxAge: getAccessTokenMaxAgeSeconds(),
@@ -71,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     response.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecure,
       sameSite: 'strict',
       path: '/',
       maxAge: getRefreshTokenMaxAgeSeconds(),
@@ -79,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     response.cookies.set('userId', result.user.id, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecure,
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
@@ -87,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     response.cookies.set('userRole', result.user.role || 'user', {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecure,
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
@@ -95,7 +97,7 @@ export async function GET(request: NextRequest) {
 
     response.cookies.set('userName', encodeURIComponent(result.user.name || ''), {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isSecure,
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
