@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import Card from '@/components/ui/Card';
+
 import CategoryTable from '@/components/finance/CategoryTable';
 import FinanceOverview from '@/components/finance/FinanceOverview';
-import ExpenseChart from '@/components/finance/ExpenseChart';
+import CategoryChart from '@/components/finance/CategoryChart';
 import TransactionModal from '@/components/finance/TransactionModal';
 import TransactionTable from '@/components/finance/TransactionTable';
 import { ITransaction } from '@/types';
@@ -142,7 +142,10 @@ export default function MoneyPage() {
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <ExpenseChart data={stats.expense.categories} />
+              <CategoryChart 
+                data={stats.expense.categories} 
+                title="Expenses by Category" 
+              />
               
               <CategoryTable 
                 title="Expense Categories" 
@@ -153,21 +156,28 @@ export default function MoneyPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-              <CategoryTable 
-                title="Income Categories" 
-                data={stats.income.categories} 
-                total={stats.income.total}
-                type="income"
-                color="#6b8cce"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <CategoryChart 
+                data={stats.investment.categories} 
+                title="Investment Distribution" 
               />
-              
+
               <CategoryTable 
                 title="Investment Categories" 
                 data={stats.investment.categories} 
                 total={stats.investment.total}
                 type="investment"
                 color="#8dc9b6"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              <CategoryTable 
+                title="Income Categories" 
+                data={stats.income.categories} 
+                total={stats.income.total}
+                type="income"
+                color="#6b8cce"
               />
 
               <CategoryTable 

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { 
   verifyRefreshToken, 
   signAccessToken, 
-  getAccessTokenMaxAgeSeconds,
-  revokeRefreshToken
+  getAccessTokenMaxAgeSeconds
 } from '@/lib/tokens';
 import { User } from '@/lib/models/User';
 import connectDB from '@/lib/mongodb';

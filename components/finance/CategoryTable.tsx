@@ -18,11 +18,12 @@ interface CategoryTableProps {
 
 export default function CategoryTable({ title, data, total, color, itemsPerPage = 5 }: CategoryTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [prevData, setPrevData] = useState(data);
 
-  // Reset to first page when data changes
-  useEffect(() => {
+  if (data !== prevData) {
+    setPrevData(data);
     setCurrentPage(1);
-  }, [data]);
+  }
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;

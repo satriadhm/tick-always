@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -104,11 +105,17 @@ export default function SettingsPage() {
         <Card className="space-y-6">
           <div className="flex items-center gap-6">
             <div 
-              className="w-24 h-24 rounded-full bg-[#e0e0e0] flex items-center justify-center text-3xl font-bold text-[#6b6b6b] overflow-hidden"
+              className="relative w-24 h-24 rounded-full bg-[#e0e0e0] flex items-center justify-center text-3xl font-bold text-[#6b6b6b] overflow-hidden"
               style={{ boxShadow: 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff' }}
             >
               {user?.avatar ? (
-                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                <Image 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="object-cover"
+                  fill
+                  unoptimized
+                />
               ) : (
                 user?.name?.charAt(0).toUpperCase() || 'U'
               )}
