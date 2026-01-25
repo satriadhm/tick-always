@@ -13,7 +13,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const user = await requireAuth(request);
 
     // Get all habits for user
-    const habits = await Habit.find({ userId: user.userId }).sort({ createdAt: -1 }).lean();
+    const habits = await Habit.find({ userId: user.userId }).sort({ createdAt: -1 });
 
     // Get today's completions
     const today = new Date();

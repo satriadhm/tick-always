@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteParams): Promis
     const days = parseInt(searchParams.get('days') || '90');
 
     // Find habit
-    const habit = await Habit.findOne({ _id: id, userId: user.userId }).lean();
+    const habit = await Habit.findOne({ _id: id, userId: user.userId });
     if (!habit) {
       return NextResponse.json({ success: false, error: 'Habit not found' }, { status: 404 });
     }

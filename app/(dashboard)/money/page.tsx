@@ -12,6 +12,7 @@ import { ITransaction } from '@/types';
 
 export default function MoneyPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'income' | 'expense' | 'investment' | 'trading'>('overview');
+  const [viewMode, setViewMode] = useState<'summary' | 'transactions'>('summary');
   const [stats, setStats] = useState({
     income: { total: 0, categories: [] },
     expense: { total: 0, categories: [] },
@@ -117,7 +118,10 @@ export default function MoneyPage() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as 'overview' | 'income' | 'expense' | 'investment' | 'trading')}
+            onClick={() => {
+              setActiveTab(tab.id as 'overview' | 'income' | 'expense' | 'investment' | 'trading');
+              setViewMode('summary');
+            }}
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
               activeTab === tab.id
                 ? 'bg-[#e0e0e0] text-[#6b8cce] shadow-[-3px_-3px_6px_rgba(255,255,255,0.8),3px_3px_6px_rgba(190,190,190,0.8)] transform scale-[1.02]'
@@ -129,6 +133,33 @@ export default function MoneyPage() {
         ))}
       </div>
 
+      {activeTab !== 'overview' && (
+        <div className="flex justify-end">
+             <div className="flex p-1 rounded-xl bg-[#e0e0e0] shadow-[inset_2px_2px_4px_rgba(190,190,190,0.6),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]">
+                <button
+                  onClick={() => setViewMode('summary')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    viewMode === 'summary'
+                      ? 'bg-[#e0e0e0] text-[#4a4a4a] shadow-[-2px_-2px_5px_rgba(255,255,255,0.8),2px_2px_5px_rgba(190,190,190,0.8)]'
+                      : 'text-[#8a8a8a] hover:text-[#4a4a4a]'
+                  }`}
+                >
+                  Summary
+                </button>
+                <button
+                  onClick={() => setViewMode('transactions')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    viewMode === 'transactions'
+                      ? 'bg-[#e0e0e0] text-[#4a4a4a] shadow-[-2px_-2px_5px_rgba(255,255,255,0.8),2px_2px_5px_rgba(190,190,190,0.8)]'
+                      : 'text-[#8a8a8a] hover:text-[#4a4a4a]'
+                  }`}
+                >
+                  Transactions
+                </button>
+             </div>
+        </div>
+      )}
+
 
 
       {/* Content Area */}
@@ -138,6 +169,7 @@ export default function MoneyPage() {
             <FinanceOverview 
               totalIncome={stats.income.total}
               totalExpense={stats.expense.total}
+              totalInvestment={stats.investment.total}
               balance={stats.balance}
             />
 
@@ -155,51 +187,41 @@ export default function MoneyPage() {
                 color="#ce6b6b"
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <CategoryChart 
-                data={stats.investment.categories} 
-                title="Investment Distribution" 
-              />
-
-              <CategoryTable 
-                title="Investment Categories" 
-                data={stats.investment.categories} 
-                total={stats.investment.total}
-                type="investment"
-                color="#8dc9b6"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <CategoryTable 
-                title="Income Categories" 
-                data={stats.income.categories} 
-                total={stats.income.total}
-                type="income"
-                color="#6b8cce"
-              />
-
-              <CategoryTable 
-                title="Trading Categories" 
-                data={stats.trading.categories} 
-                total={stats.trading.total}
-                type="trading"
-                color="#d6b656"
-              />
-            </div>
           </div>
         ) : (
-          <TransactionTable 
-            type={activeTab}
-            transactions={transactions.filter(t => t.type === activeTab)}
-            onAdd={handleSaveTransaction}
-            onDelete={handleDeleteTransaction}
-            onEdit={(t) => {
-              setEditingTransaction(t);
-              setIsModalOpen(true);
-            }}
-          />
+          <>
+             {viewMode === 'summary' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                   <CategoryChart 
+                     data={stats[activeTab].categories} 
+                     title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Distribution`}
+                   />
+                   
+                   <CategoryTable 
+                     title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Categories`}
+                     data={stats[activeTab].categories} 
+                     total={stats[activeTab].total}
+                     type={activeTab}
+                     color={
+                       activeTab === 'income' ? '#6b8cce' : 
+                       activeTab === 'expense' ? '#ce6b6b' : 
+                       activeTab === 'investment' ? '#8dc9b6' : '#d6b656'
+                     }
+                   />
+                </div>
+             ) : (
+              <TransactionTable 
+                type={activeTab}
+                transactions={transactions.filter(t => t.type === activeTab)}
+                onAdd={handleSaveTransaction}
+                onDelete={handleDeleteTransaction}
+                onEdit={(t) => {
+                  setEditingTransaction(t);
+                  setIsModalOpen(true);
+                }}
+              />
+             )}
+          </>
         )}
       </div>
 

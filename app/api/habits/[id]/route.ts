@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: RouteParams): Promis
     const user = await requireAuth(request);
     const { id } = await params;
 
-    const habit = await Habit.findOne({ _id: id, userId: user.userId }).lean();
+    const habit = await Habit.findOne({ _id: id, userId: user.userId });
 
     if (!habit) {
       return NextResponse.json({ success: false, error: 'Habit not found' }, { status: 404 });
