@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('accessToken', accessToken, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: getAccessTokenMaxAgeSeconds(),
     });
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: getRefreshTokenMaxAgeSeconds(),
     });
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('userId', result.user.id, {
       httpOnly: false,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('userRole', result.user.role || 'user', {
       httpOnly: false,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set('userName', encodeURIComponent(result.user.name || ''), {
       httpOnly: false,
       secure: isSecure,
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
     });

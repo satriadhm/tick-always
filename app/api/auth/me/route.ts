@@ -9,10 +9,12 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     await connectDB();
 
     const authUser = await requireAuth(request);
+    console.log('[Auth Debug] User authenticated:', authUser.userId);
 
     // Get user from database
     const user = await User.findById(authUser.userId).select('-password');
     if (!user) {
+      console.log('[Auth Debug] User not found in database:', authUser.userId);
       return NextResponse.json(
         { success: false, error: 'User not found' },
         { status: 404 }
@@ -37,6 +39,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     );
   } catch (error: unknown) {
     if (error instanceof Error && error.message === 'Unauthorized') {
+      console.log('[Auth Debug] Unauthorized request');
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
