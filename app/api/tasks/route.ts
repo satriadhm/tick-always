@@ -82,8 +82,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
     const tasks = await Task.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(limit)
-      .lean();
+      .limit(limit);
 
     const total = await Task.countDocuments(query);
 

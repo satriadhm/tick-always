@@ -35,7 +35,7 @@ export async function GET(
       _id: id,
       userId: user.userId,
       deletedAt: { $exists: false },
-    }).lean();
+    });
 
     if (!task) {
       return NextResponse.json({ success: false, error: 'Task not found' }, { status: 404 });

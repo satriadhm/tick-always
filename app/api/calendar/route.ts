@@ -70,7 +70,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
         { dueDate: { $gte: startDate, $lte: endDate } },
         { isRecurring: true },
       ],
-    }).lean();
+    });
 
     // Group tasks by date
     const tasksByDate: { [key: string]: CalendarTask[] } = {};
