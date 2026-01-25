@@ -33,23 +33,27 @@ export function mongooseEncryption(schema: Schema, options: EncryptionOptions) {
 
   // Pre-update hook: Encrypt updated fields
   // Covers findOneAndUpdate, findByIdAndUpdate, updateOne, updateMany
-  schema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'] as any, async function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const update = (this as any).getUpdate();
-    
-    if (update) {
-      fields.forEach((field) => {
-        // Check top-level update (e.g. { title: 'New' })
-        if (update[field] && typeof update[field] === 'string') {
-          update[field] = encrypt(update[field]);
-        }
+  // Pre-update hook: Encrypt updated fields
+  // Covers findOneAndUpdate, findByIdAndUpdate, updateOne, updateMany
+  (['findOneAndUpdate', 'updateOne', 'updateMany'] as const).forEach((method) => {
+    schema.pre(method, async function () {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const update = (this as any).getUpdate();
+      
+      if (update) {
+        fields.forEach((field) => {
+          // Check top-level update (e.g. { title: 'New' })
+          if (update[field] && typeof update[field] === 'string') {
+            update[field] = encrypt(update[field]);
+          }
 
-        // Check $set operator (e.g. { $set: { title: 'New' } })
-        if (update.$set && update.$set[field] && typeof update.$set[field] === 'string') {
-          update.$set[field] = encrypt(update.$set[field]);
-        }
-      });
-    }
+          // Check $set operator (e.g. { $set: { title: 'New' } })
+          if (update.$set && update.$set[field] && typeof update.$set[field] === 'string') {
+            update.$set[field] = encrypt(update.$set[field]);
+          }
+        });
+      }
+    });
   });
 
   // Post-init hook: Decrypt fields when document is loaded from DB

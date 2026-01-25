@@ -49,7 +49,7 @@ export function decrypt(text: string): string {
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
-  } catch (error) {
+  } catch {
     // Silent fail for mixed content (might be plain text containing a colon)
     // or wrong key. Returning original text is usually safer than crashing.
     return text; 

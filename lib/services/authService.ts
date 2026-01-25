@@ -1,5 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import { User } from '@/lib/models/User';
 import { SimpleCache } from '@/lib/utils/cache';
